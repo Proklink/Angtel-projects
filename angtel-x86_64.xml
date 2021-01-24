@@ -1,0 +1,50 @@
+<!--
+WARNING: THIS IS AN AUTO-GENERATED FILE. CHANGES TO IT ARE LIKELY TO BE
+OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:
+  virsh edit container10
+or other application using the libvirt API.
+-->
+
+<domain type='lxc'>
+  <name>angtel-x86-64</name>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>exe</type>
+    <init>/sbin/init</init>
+  </os>
+  <features>
+    <privnet/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/lib/libvirt/libvirt_lxc</emulator>
+    <filesystem type='file' accessmode='mapped'>
+      <source file='/home/proklink/Projects/angtel/3.ext4'/>
+      <target dir='/'/>
+    </filesystem>
+    <filesystem type='mount' accessmode='mapped'>
+      <source dir='/home/proklink/Projects/angtel'/>
+      <target dir='/home/root/applications'/>
+    </filesystem>
+    <filesystem type='mount' accessmode='mapped'>
+      <source dir='/sys/kernel/debug'/>
+      <target dir='/sys/kernel/debug'/>
+    </filesystem>
+    <interface type='bridge'>
+      <source bridge='br0'/>
+    </interface>
+    <console type='pty'>
+      <target type='lxc' port='0'/>
+    </console>
+    <hostdev mode='capabilities' type='net'>
+        <source>
+            <interface>enp2s0</interface>
+        </source>
+    </hostdev>>
+  </devices>
+</domain>

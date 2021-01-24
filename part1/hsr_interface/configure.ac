@@ -1,0 +1,26 @@
+
+AC_PREREQ(2.57)
+AC_INIT([test_create_hsr], [1.0])
+AC_CONFIG_SRCDIR([test_create_hsr.c])
+AC_CONFIG_MACRO_DIR([m4])
+AM_INIT_AUTOMAKE([foreign])
+AM_SILENT_RULES([no])
+
+
+LT_INIT
+
+PKG_PROG_PKG_CONFIG
+
+PKG_CHECK_MODULES([LIBNL], [libnl-route-3.0], , )
+AC_SUBST([LIBNL_CFLAGS])
+AC_SUBST([LIBNL_LIBS])
+
+PKG_CHECK_MODULES([LIBNL_CLI], [libnl-cli-3.0], , )
+AC_SUBST([LIBNL_CLI_CFLAGS])
+AC_SUBST([LIBNL_CLI_LIBS])
+
+
+AC_CONFIG_FILES([
+        Makefile
+])
+AC_OUTPUT

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+ ip link add name hsr0 type hsr slave1 eth1 slave2 eth2
+ ip link set dev hsr0 up
+ ip addr add dev hsr0 192.168.2.11/23
+
+ 
+ #mount /sys/kernel/debug

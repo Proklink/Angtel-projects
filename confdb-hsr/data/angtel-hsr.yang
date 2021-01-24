@@ -1,0 +1,45 @@
+module angtel-hsr {
+  yang-version 1.1;
+  namespace "urn:angtel:yang:angtel-hsr";
+  prefix "hsr";
+
+  import ietf-interfaces { prefix "if"; }
+  import angtel-interfaces { prefix "aif"; }
+  import ietf-yang-types { prefix yang; }
+
+  revision 2020-03-03 {
+    description
+      "Initial version.";
+  }
+
+  augment "/if:interfaces/if:interface" {
+    when "if:type = 'aif:hsr'";
+
+    container hsr {
+        leaf slave-a {
+            type if:interface-ref;
+        }
+        leaf slave-b {
+            type if:interface-ref;
+        }
+        must "slave-a != slave-b" {
+            error-message
+                "Interfaces must be different";
+        }
+        list node_list {
+            key "index";
+            config false;
+            
+            leaf index {
+                type uint32;
+            }
+            leaf mac-address {
+                type yang:mac-address;
+                description
+                "The MAC address of the node.";
+            }
+        }
+    }
+  }
+
+}

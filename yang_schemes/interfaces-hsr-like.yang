@@ -1,0 +1,83 @@
+
+module interfaces-hsr-like {
+
+  namespace
+    "urn:ietf:params:xml:ns:yang:interfaces-hsr-like";
+
+  prefix hsrlike;
+
+  import ietf-interfaces {
+    prefix if;
+  }
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  import iana-if-type {
+    prefix ianaift;
+  }
+
+  augment "/if:interfaces/if:interface" {
+    when "derived-from-or-self(if:type, 'ianaift:ethernetCsmacd') or
+          derived-from-or-self(if:type, 'ianaift:ieee8023adLag') or
+          derived-from-or-self(if:type, 'ianaift:l2vlan') or
+          derived-from-or-self(if:type, 'ianaift:ifPwType')" {
+      description "Applies to all Ethernet-like interfaces";
+    }
+    description
+      "Augment the interface model with parameters for all
+       Ethernet-like interfaces";
+
+    container ethernet-like {
+      description
+        "Contains parameters for interfaces that use Ethernet framing
+         and expose an Ethernet MAC layer.";
+      leaf mac-address {
+        type yang:mac-address;
+        description
+          "The MAC address of the interface.";
+      }
+
+      leaf bia-mac-address {
+        type yang:mac-address;
+        config false;
+        description
+          "The 'burnt-in' MAC address.  I.e the default MAC address
+           assigned to the interface if no MAC address has been
+           explicitly configured on it.";
+      }
+
+      container statistics {
+        config false;
+        description
+          "Packet statistics that apply to all Ethernet-like
+           interfaces";
+        leaf in-drop-unknown-dest-mac-pkts {
+          type yang:counter64;
+          units frames;
+          description 
+            "A count of the number of frames that were well formed,
+             but otherwise dropped because the destination MAC
+             address did not pass any ingress destination MAC address
+             filter.
+
+             For consistency, frames counted against this drop
+             counters are also counted against the IETF interfaces
+             statistics.  In particular, they are included in
+             in-octets and in-discards, but are not included in
+             in-unicast-pkts, in-multicast-pkts or in-broadcast-pkts,
+             because they are not delivered to a higher layer.
+
+             Discontinuities in the values of this counters in this
+             container can occur at re-initialization of the
+             management system, and at other times as indicated by
+             the value of the 'discontinuity-time' leaf defined in
+             the ietf-interfaces YANG module (RFC 7223).";
+        }
+      }
+    }
+  }
+}
+ 
+ 

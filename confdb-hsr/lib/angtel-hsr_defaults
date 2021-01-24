@@ -1,0 +1,34 @@
+#!/usr/bin/env lua
+
+-- Protection of the global environment.
+_ENV = setmetatable({}, {__index = _G})
+
+local jansson = require "jansson"
+
+local transaction = {}
+
+local name = "hsr0"
+local slave_a = "eth0"
+local slave_b = "enp2s0"
+
+-- Примечание: при необходимости нужно адаптировать для N сетевых интерфейсов.
+local operation = {
+	operation = "merge",
+	target = "/ietf-interfaces:interfaces/interface",
+	value = {
+		["interface"] = {
+			{
+				["name"] = name,
+				["angtel-hsr:hsr"] = {
+					["slave-a"] = slave_a,
+					["slave-b"] = slave_b
+				}
+			}
+		}
+	}
+}
+
+-- Добавление вышеуказанной оперции в общую транзакцию
+table.insert(transaction, operation)
+
+print(jansson.encode(transaction, jansson.INDENT(4)))

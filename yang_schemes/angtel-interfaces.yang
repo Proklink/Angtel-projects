@@ -1,0 +1,128 @@
+module angtel-interfaces {
+  yang-version 1.1;
+  namespace "urn:angtel:yang:angtel-interfaces";
+  prefix "aif";
+
+  import iana-if-type {
+    prefix "ianaif";
+  }
+
+  import ietf-yang-types {
+    prefix "yang";
+  }
+
+  import ietf-interfaces {
+    prefix "if";
+  }
+
+  import ietf-ip {
+    prefix "ip";
+  }
+
+  revision 2020-07-06 {
+    description "Add deviation for loopback interface.";
+  }
+
+  revision 2019-09-12 {
+    description "Error-disable related definitions.";
+  }
+
+  revision 2019-09-04 {
+    description
+      "Initial Version.";
+  }
+
+  identity hsr {
+    base ianaif:ethernetCsmacd;
+  }
+
+  identity errdisable-cause {
+    description
+      "This base identity defines causes to errdisable.";
+  }
+
+  identity stp-bpdu-guard {
+    base errdisable-cause;
+  }
+
+  identity port-security {
+    base errdisable-cause;
+  }
+
+  typedef errdisable-cause-type {
+    type identityref {
+      base "errdisable-cause";
+    }
+  }
+
+  rpc clear-errdisable-state {
+    input {
+      leaf-list interfaces {
+        type if:interface-ref;
+      }
+    }
+  }
+
+  container errdisable {
+    leaf recovery-interval {
+      type uint32 {
+        range "30..86400";
+      }
+      default 300;
+      units 'seconds';
+    }
+
+    list cause {
+      key "type";
+
+      leaf type {
+        type errdisable-cause-type;
+      }
+
+      leaf recovery {
+        type boolean;
+        default "false";
+        description
+          "Whether enable recovery from error-disabled state.";
+      }
+    }
+  }
+
+  augment "/if:interfaces/if:interface" {
+    list errdisable {
+      key "reason";
+      description
+        "Indicates the interface in error-disabled state.";
+
+      config false;
+
+      leaf reason {
+        type errdisable-cause-type;
+      }
+
+      leaf last-occurrence {
+        type yang:date-and-time;
+        mandatory true;
+        description
+          "The time of last error-disable cause occurrence.";
+      }
+    }
+  }
+
+  deviation "/if:interfaces" {
+    deviate add {
+      must "if:interface[if:type='iana-if-type:softwareLoopback']" +
+           "/if:enabled = 'true'" {
+        error-message
+          "Loopback interface must be enabled.";
+      }
+
+      must "if:interface[if:type='iana-if-type:softwareLoopback']" +
+           "/ip:ipv4/ip:address[ip:ip='127.0.0.1' and ip:prefix-length=8]" {
+        error-message
+          "Loopback interface must have IP address '127.0.0.1/8'";
+      }
+    }
+  }
+
+}

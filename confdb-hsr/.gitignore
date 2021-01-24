@@ -1,0 +1,71 @@
+# http://www.gnu.org/software/automake
+Makefile.in
+
+# http://www.gnu.org/software/autoconf
+/autom4te.cache
+/autoscan.log
+/autoscan-*.log
+/aclocal.m4
+/compile
+/config.h.in
+/configure
+/configure.scan
+/depcomp
+/install-sh
+/missing
+/stamp-h1
+
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.slo
+*.lo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+*.lai
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+
+# other...
+*~
+*.libs
+*.deps
+config.guess
+config.sub
+config.log
+ltmain.sh
+mipsel-linux-uclibc-libtool
+mipsel-oe-linux-uclibc-libtool
+m4/
+libtool
+tags
+.envrc
+*.swp
+*.swo
+.vscode

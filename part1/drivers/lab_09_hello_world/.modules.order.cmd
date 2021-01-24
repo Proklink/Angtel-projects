@@ -1,0 +1,1 @@
+cmd_/home/student/projects/applications/danil/lab_09_hello_world/modules.order := {   echo /home/student/projects/applications/danil/lab_09_hello_world/hello_world.ko; :; } | awk '!x[$$0]++' - > /home/student/projects/applications/danil/lab_09_hello_world/modules.order

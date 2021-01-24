@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="angtel-hsr"
+        xmlns="urn:ietf:params:xml:ns:yang:yin:1"
+        xmlns:hsr="urn:angtel:yang:angtel-hsr"
+        xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces"
+        xmlns:aif="urn:angtel:yang:angtel-interfaces"
+        xmlns:yang="urn:ietf:params:xml:ns:yang:ietf-yang-types">
+  <yang-version value="1.1"/>
+  <namespace uri="urn:angtel:yang:angtel-hsr"/>
+  <prefix value="hsr"/>
+  <import module="ietf-interfaces">
+    <prefix value="if"/>
+  </import>
+  <import module="angtel-interfaces">
+    <prefix value="aif"/>
+  </import>
+  <import module="ietf-yang-types">
+    <prefix value="yang"/>
+  </import>
+  <revision date="2020-03-03">
+    <description>
+      <text>Initial version.</text>
+    </description>
+  </revision>
+  <augment target-node="/if:interfaces/if:interface">
+    <when condition="if:type = 'aif:hsr'"/>
+    <container name="hsr">
+      <leaf name="slave-a">
+        <type name="if:interface-ref"/>
+      </leaf>
+      <leaf name="slave-b">
+        <type name="if:interface-ref"/>
+      </leaf>
+      <must condition="slave-a != slave-b">
+        <error-message>
+          <value>Interfaces must be different</value>
+        </error-message>
+      </must>
+      <list name="node_list">
+        <key value="index"/>
+        <config value="false"/>
+        <leaf name="index">
+          <type name="uint32"/>
+        </leaf>
+        <leaf name="mac-address">
+          <type name="yang:mac-address"/>
+          <description>
+            <text>The MAC address of the node.</text>
+          </description>
+        </leaf>
+      </list>
+    </container>
+  </augment>
+</module>
