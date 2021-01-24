@@ -1,11 +1,13 @@
 
 local c = require('cdb_cli')
+local pretty = require("pl.pretty")
 local mod = {}
 
 -- Полезные инструменты для Lua.
 -- local penlight = require "pl.import_into" ()
 
 local function set_hsr(s, name, slave_a, slave_b)
+	
 	local p = {
 		operation = "merge",
 		target = "/ietf-interfaces:interfaces/interface",
@@ -25,29 +27,43 @@ local function set_hsr(s, name, slave_a, slave_b)
 	s:cdb_edit_config(p)
 end
 
-local function check_interfaces(s, args.if_name, args.slave_a, args.slave_b)
-	local pretty = require("pl.pretty")
+local function delete_hsr(s, name)
+
+	s:cdb_edit_config({
+		operation = "remove",
+		target = ("/ietf-interfaces:interfaces" ..
+		"/interface[name='%s']"):format(name),
+	})
+end
+
+local function check_interfaces(s, if_name, slave_a, slave_b)
+	
 	local target = "/ietf-interfaces:interfaces/interface"
-	local data1 = s:cdb_get(target)
-	local data2 = c.strip_cdb_data(data)
-	s:output(pretty.write(data1))
-	s:output(pretty.write(data2))
+	local data = c.strip_cdb_data(s:cdb_get(target))
+	--local data2 = c.strip_cdb_data(data1)
+	
 
-	--for key, value if ipairs(data) do
-	--	if value["type"] ~= "angtel-interfaces:hsr" then
-	--		goto continue
-	--	end
+	for key, value in pairs(data) do
+		if value["type"] ~= "angtel-interfaces:hsr" then
+			goto continue
+		end
 
-	--	local slave_a, slave_b
-	--	local slave_target = ("/ietf-interfaces:interfaces" ..
-	--				"/interface[name='%s']/angtel-hsr:hsr"):format(value["name"])
-	--	slaves_data = s:cdb_get(target)
-	--	slaves_data = c.strip_cdb_data(slaves_data)
+		local slave_target = ("/ietf-interfaces:interfaces" ..
+					"/interface[name='%s']/angtel-hsr:hsr"):format(value["name"])
+		slaves_data = s:cdb_get(slave_target)
+		slaves_data = c.strip_cdb_data(slaves_data)
 
+		if ((slaves_data[1]["slave-a"] == slave_a) or (slaves_data[1]["slave-b"] == slave_b) or
+			(slaves_data[1]["slave-b"] == slave_a) or (slaves_data[1]["slave-a"] == slave_b)) then
 
+			s:output(pretty.write(("%s already has this configuration"):format(value["name"])))
+			return 0
+		end
+		
+		
+		::continue::
+	end
 
-	--	::continue::
-	--end
 	return 1
 end
 
@@ -115,10 +131,31 @@ local hsr_commands = {
    
 		handler = function(s, args)
 			local check = check_interfaces(s, args.if_name, args.slave_a, args.slave_b)
+		
 			if check == 1 then
 				set_hsr(s, args.if_name, args.slave_a, args.slave_b)
 			end
 		end
+	},
+	["hsr interface delete"] = {
+		description = "Deletes HSR interface parameters.",
+		usage_info = "IF-NAME",
+		parameters = {
+			{"IF-NAME", "Interface name."}	
+		},
+		args = {
+			{
+				type = "positional",
+				name = "if_name",
+				vtype = "string",
+				nvalues = "1",
+				required = true
+			}
+		},
+		handler = function(s, args)
+			delete_hsr(s, args.if_name)
+		end
+
 	}
 }
 

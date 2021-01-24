@@ -205,29 +205,29 @@ int change_analysis(const char *if_name, const char *slave_1_name, const char *s
 
 	} else {
 		bool isNewInterface = true;
-		struct nl_object *obj;
+		//struct nl_object *obj;
 		
 		
-		for (NL_CACHE_ELEMENTS(link_cache, obj)) {
+		// for (NL_CACHE_ELEMENTS(link_cache, obj)) {
 			
-			struct rtnl_link *link = nl_object_priv(obj);
+		// 	struct rtnl_link *link = nl_object_priv(obj);
 			
-			if (rtnl_link_is_hsr(link) != 0) {
+		// 	if (rtnl_link_is_hsr(link) != 0) {
 		
 
-				int slave_1_id = rtnl_link_get_ifindex(slave_1_link);
-				int slave_2_id = rtnl_link_get_ifindex(slave_2_link);
-				int link_slave_1_id = rtnl_link_hsr_get_slave1(link);
-				int link_slave_2_id = rtnl_link_hsr_get_slave2(link);
+		// 		int slave_1_id = rtnl_link_get_ifindex(slave_1_link);
+		// 		int slave_2_id = rtnl_link_get_ifindex(slave_2_link);
+		// 		int link_slave_1_id = rtnl_link_hsr_get_slave1(link);
+		// 		int link_slave_2_id = rtnl_link_hsr_get_slave2(link);
 
-				if ( ( (link_slave_1_id == slave_1_id) && (link_slave_2_id == slave_2_id) ) || 
-					( (link_slave_1_id == slave_2_id) && (link_slave_2_id == slave_1_id) ) ) {
-						printf("\n%s already has this configuration\n", rtnl_link_get_name(link));
-						isNewInterface = false;
-				}
-			}
+		// 		if ( ( (link_slave_1_id == slave_1_id) && (link_slave_2_id == slave_2_id) ) || 
+		// 			( (link_slave_1_id == slave_2_id) && (link_slave_2_id == slave_1_id) ) ) {
+		// 				printf("\n%s already has this configuration\n", rtnl_link_get_name(link));
+		// 				isNewInterface = false;
+		// 		}
+		// 	}
 
-		}
+		// }
 
 		if (isNewInterface) {
 			err = create_hsr_interface(if_name, slave_1_name, slave_2_name, 1);
