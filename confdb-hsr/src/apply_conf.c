@@ -70,29 +70,19 @@ int delete_hsr_interface(const char *if_name) {
 		return err;
 	}
 
-
 	if ((err = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
 		nl_perror(err, "Unable to allocate cache");
 		return err;
 	}	
 
-	
 	hsr_link = rtnl_link_get_by_name(link_cache, if_name);
 			
-
-
-
 	err = rtnl_link_delete(sk, hsr_link);
-
-
-
 
 	rtnl_link_put(hsr_link);
 	nl_close(sk);
 
-
 	return 0;
-
 }
 
 
@@ -101,15 +91,12 @@ int change_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link,
 		
 		bool isChanges = false;
 		int ret;
-
 		
 		struct rtnl_link *new_hsr_link = rtnl_link_hsr_alloc();
 			
 		rtnl_link_set_name(new_hsr_link, rtnl_link_get_name(hsr_link));
 		
 		rtnl_link_hsr_set_version(new_hsr_link, 1);
-			
-
 
 		int slave_1_id = rtnl_link_get_ifindex(slave_1_link);
 		int slave_2_id = rtnl_link_get_ifindex(slave_2_link);
@@ -188,55 +175,26 @@ int change_analysis(const char *if_name, const char *slave_1_name, const char *s
 	slave_1_link = rtnl_link_get_by_name(link_cache, slave_1_name);
 	slave_2_link = rtnl_link_get_by_name(link_cache, slave_2_name);
 		
-		if ((slave_1_link == NULL) || (slave_2_link == NULL))
-			return -1;
+	printf("\n178_create_hsr_interface\n");
+	if ((slave_1_link == NULL) || (slave_2_link == NULL))
+		return -1;
+	printf("\n181_create_hsr_interface\n");
 
 	hsr_link = rtnl_link_get_by_name(link_cache, if_name);
 
 
-	if (hsr_link != NULL) {
-		//hsr интерфейс существует, меняем слейвы
-		printf("\n%s already exists\n", if_name);
-		int ret = change_hsr_interface(sk, hsr_link, slave_1_link, slave_2_link);
-		
-		if (ret < 0)
-			return -1;
-		
+	if (hsr_link == NULL) {
 
-	} else {
-		bool isNewInterface = true;
-		//struct nl_object *obj;
-		
-		
-		// for (NL_CACHE_ELEMENTS(link_cache, obj)) {
-			
-		// 	struct rtnl_link *link = nl_object_priv(obj);
-			
-		// 	if (rtnl_link_is_hsr(link) != 0) {
-		
+		err = create_hsr_interface(if_name, slave_1_name, slave_2_name, 1);
+		if (err < 0) {
+			printf("\n188_create_hsr_interface\n");
+			return err;
 
-		// 		int slave_1_id = rtnl_link_get_ifindex(slave_1_link);
-		// 		int slave_2_id = rtnl_link_get_ifindex(slave_2_link);
-		// 		int link_slave_1_id = rtnl_link_hsr_get_slave1(link);
-		// 		int link_slave_2_id = rtnl_link_hsr_get_slave2(link);
-
-		// 		if ( ( (link_slave_1_id == slave_1_id) && (link_slave_2_id == slave_2_id) ) || 
-		// 			( (link_slave_1_id == slave_2_id) && (link_slave_2_id == slave_1_id) ) ) {
-		// 				printf("\n%s already has this configuration\n", rtnl_link_get_name(link));
-		// 				isNewInterface = false;
-		// 		}
-		// 	}
-
-		// }
-
-		if (isNewInterface) {
-			err = create_hsr_interface(if_name, slave_1_name, slave_2_name, 1);
-		
 		}
-
 
 	}
 
 	return 0;
 
 }
+

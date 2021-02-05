@@ -22,6 +22,7 @@ example_SOURCES = \
 	log.c \
 	utils.c \
 	apply_conf.c \
+	status.c \
 	$(NULL)
 example_LDADD = \
 	$(common_libs) \

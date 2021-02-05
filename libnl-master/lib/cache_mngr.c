@@ -328,6 +328,7 @@ int nl_cache_mngr_add_cache(struct nl_cache_mngr *mngr, struct nl_cache *cache,
 	}
 
 	for (grp = ops->co_groups; grp->ag_group; grp++) {
+		
 		err = nl_socket_add_membership(mngr->cm_sock, grp->ag_group);
 		if (err < 0)
 			return err;

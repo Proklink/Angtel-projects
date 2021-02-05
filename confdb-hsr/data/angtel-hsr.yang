@@ -27,12 +27,9 @@ module angtel-hsr {
                 "Interfaces must be different";
         }
         list node_list {
-            key "index";
+            key "mac-address";
             config false;
             
-            leaf index {
-                type uint32;
-            }
             leaf mac-address {
                 type yang:mac-address;
                 description

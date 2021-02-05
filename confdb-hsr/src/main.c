@@ -5,28 +5,46 @@
 #include <sys/select.h>
 #include <signal.h>
 #include <stdatomic.h>
-#include "apply_conf.h"
+
 
 #include <jansson.h>
-#include <confdb/confdb.h>
-#include <confdb/log.h>
+
+
+#include <linux/if.h>
+
+#include <netlink/route/link.h>
+
+
 
 #include "log.h"
-
+#include "apply_conf.h"
 #include "utils.h"
+#include "status.h"
+
 
 static volatile atomic_int keep_running;
 
-#define MODULE_NAME "hsr"
-#define XPATH_ITF "/ietf-interfaces:interfaces/interface"
 
-struct hsr_module {
-	struct confdb *cdb;
-	char *slave_a;
-	char *slave_b;
-	int num_dev_in_ring;
+
+static void hnode_cache_change_cb(struct nl_cache *cache,
+				       struct nl_object *o_obj,
+				       struct nl_object *n_obj,
+				       uint64_t attr_diff, int nl_act, void *data)
+{
+	dlog_cache_change("hsr_node", STDLOG_INFO, n_obj ?: o_obj, attr_diff,
+			  nl_act, NL_DUMP_LINE);
+
+	printf("\nasdfg\n");
+
+	struct hsr_module *app = data;
+
+	if (nl_act == NL_ACT_NEW) {
+		add_node_to_list(app, n_obj);
+	} else if (nl_act == NL_ACT_DEL)
+		delete_node_from_list(app, n_obj);
+
 	
-};
+}
 
 static bool cdb_log_enable;
 static int cdb_logger(const int severity, const char *fmt, va_list ap)
@@ -94,157 +112,6 @@ static void opt_free(void)
 	stdlog_close(debug_logger);
 }
 
-/*
- * Функция, переводящая время в ISO-формат.
- *
- * @timestamp - Временная метка (результат вызова функции time()).
- * @iso_time - Буфер для хранения времени в ISO-формате.
- * @iso_time - Размер буфера @iso_time.
- */
-/*static int timestamp_to_iso8601(time_t timestamp, char *iso_time, size_t length)
-{
-	struct tm *local_timestamp_bd;
-
-	char local_timestamp[64];
-	char timezone[8];
-	char timezone_hours[8] = { 0 };
-	char timezone_minutes[8] = { 0 };
-
-	size_t strftime_rv;
-	int snprintf_rv;
-
-	local_timestamp_bd = localtime(&timestamp);
-	if (local_timestamp_bd == NULL) {
-		DLOG_FUNC(STDLOG_ERR, "Unable to create local timestamp.");
-		return -1;
-	}
-
-	strftime_rv = strftime(local_timestamp, sizeof(local_timestamp),
-			       "%Y-%m-%dT%H:%M:%S", local_timestamp_bd);
-	if (strftime_rv == 0) {
-		DLOG_FUNC(STDLOG_ERR, "Unable to format local timestamp.");
-		return -1;
-	}
-
-	strftime_rv = strftime(timezone, sizeof(timezone),
-			       "%z", local_timestamp_bd);
-	if (strftime_rv == 0) {
-		DLOG_FUNC(STDLOG_ERR, "Unable to format local timezone.");
-		return -1;
-	}
-
-	memcpy(timezone_hours, timezone, strlen(timezone) - 2);
-	memcpy(timezone_minutes, timezone + strlen(timezone) - 2, 2);
-
-	snprintf_rv = snprintf(iso_time, length,
-			       "%s%s:%s", local_timestamp,
-			       timezone_hours, timezone_minutes);
-	if (snprintf_rv == -1) {
-		DLOG_FUNC(STDLOG_ERR, "Unable to print local timestamp.");
-		return -1;
-	}
-
-	return 0;
-}*/
-
-/*
- * Функция, создающая статусные данные.
- */
-/*static json_t *create_cdb_data(void)
-{
-	json_t *json_data;
-	time_t timestamp;
-	char timestamp_string[64];
-	int ret;
-
-	timestamp = time(NULL);
-	ret = timestamp_to_iso8601(timestamp,
-				   timestamp_string,
-				   sizeof(timestamp_string));
-	if (ret == -1)
-		return NULL;
-
-	json_data = json_string(timestamp_string);
-	if (json_data == NULL)
-		return NULL;
-
-	return json_data;
-}*/
-
-/*static int app_edit_config(struct hsr_module *app, const char *iface_name,
-			   const char *value)
-{
-	int ret;
-	json_t *jv;
-	char *slave_a = "eth0";
-	char *slave_b = "enp2s0";
-
-	jv = json_pack("{s:s, s:s}", "slave-a", &slave_a,
-				     			 "slave-b", &slave_b);
-	if (!jv) {
-		DLOG_ERR("Failed to pack jv");
-		return -1;
-	}
-
-	ret = cdb_edit_config(app->cdb, CDB_OP_MERGE, jv,
-			      "/ietf-interfaces:interfaces/interface[name='%s']/angtel-hsr:hsr {slave_a, slave_b}", 
-				  																				iface_name);
-	if (ret < 0) {
-		DLOG_ERR("Failed to cdb_edit_status");
-		return -1;
-	}
-
-	return 0;
-}*/
-
-/*
- * Функция, демонстрирующая запись данных (в т.ч. статусных) в БД.
- *
- * @mod - Указатель на модуль configd.
- * @interface_name - Имя сетевого интерфейса для которого записывается статус.
- */
-/*static int write_status(struct confdb *cdb, const char *interface_name)
-{
-	json_t *jtsx;
-	json_t *json_data;
-	int ret;
-
-	
-	 // Транзакция к CDB которая содержит в себе различные операции:
-	 // delete, remove, create, merge, replace и т.д.
-	 // К данной транзакции будут добавляться желаемые операции с данными.
-	 //
-	jtsx = json_array();
-	if (jtsx == NULL) {
-		DLOG_FUNC(STDLOG_ERR, "Unable to create CDB transaction.");
-		return -1;
-	}
-
-	json_data = create_cdb_data();
-	if (json_data == NULL)
-		return -1;
-
-	// Добавление операции к транзакции. 
-	ret = jtsx_add_merge_op(jtsx, 0, json_data,
-				"/ietf-interfaces:interfaces"
-				"/interface {\"ietf-interfaces:interface\":[{\"name\":\"hsr1\","
-				"\"type\":\"angtel-interfaces:hsr\",\"angtel-hsr:hsr\":{\"slave-a\":\"enp2s0\","
-				"\"slave-b\":\"eth0\"}}]}",
-				interface_name);
-	if (ret == -1) {
-		DLOG_FUNC(STDLOG_ERR, "Unable to merge CDB object.");
-		return -1;
-	}
-
-	ret = cdb_edit_status_tsx(cdb, jtsx);
-	if (ret == -1) {
-		DLOG_FUNC(STDLOG_ERR, "Unable to execute CDB transaction.");
-		return -1;
-	}
-
-	return 0;
-}
-*/
 
 static int 	hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 {
@@ -286,13 +153,14 @@ static int 	hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data
 
 		}
 
-		
-		
-
 		/* Здесь можно добавить какие-то полезные действия. */
 		printf("slave-a: %s, slave-b: %s\n\n", slave_a, slave_b);
 
 		ret = change_analysis(interface_name, slave_a, slave_b);
+		if (ret < 0) {
+			printf("\n161_change_analysis\n");
+			return ret;
+		}
 		
 	} else {
 		/* Данные удалены. */
@@ -301,23 +169,16 @@ static int 	hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data
 		delete_hsr_interface(interface_name);
 	}
 
-	// /* Запись статуса в БД. */
-	// ret = write_status(app->cdb, interface_name);
-	// if (ret == -1)
-	// 	DLOG_FUNC(STDLOG_ERR,
-	// 		  "Unable to write status for interface %s.",
-	// 		  interface_name);
-
-
+	printf("\nasdasd2\n");
 	return 0;
 }
+
 
 /* Подписка отслеживание изменения данных. */
 static struct cdb_data_notifier notifiers[] = {
 	{
 		/* Путь XPath в схеме по которому расположены отслеживаемые данные. */
-		.schema_xpath = "/ietf-interfaces:interfaces/interface"
-				"/angtel-hsr:hsr",
+		.schema_xpath = XPATH_ITF "/angtel-hsr:hsr",
 		/* Обработчик, вызываемый при обнаружении изменения данных. */
 		.handler = hsr_handler,
 		/* Флаг, обозначающий, что изменение статусных данных нужно игнорировать. */
@@ -330,24 +191,26 @@ static struct cdb_data_notifier notifiers[] = {
 };
 
 
-
-
 static void app_destroy(struct hsr_module *app)
 {
 	if (!app)
 		return;
+		
+	if (app->nl_mngr)
+		nl_cache_mngr_free(app->nl_mngr);
+
+	nl_socket_free(app->sk);
 
 	cdb_remove_extension(app->cdb, "hsr-app");
 	cdb_wait_for_responses(app->cdb);
 	cdb_destroy(app->cdb);
-	free(app->slave_a);
-	free(app->slave_b);
 	free(app);
 }
 
 static struct hsr_module *app_create(void)
 {
 	int ret;
+	struct nl_cache *hnode_cache = NULL;
 	struct hsr_module *app = NULL;
 
 	app = calloc(1, sizeof(*app));
@@ -366,6 +229,63 @@ static struct hsr_module *app_create(void)
 		goto on_error;
 	}
 
+	app->sk = nl_socket_alloc();
+	if (!app->sk) {
+		DLOG_ERR("Failed to alloc nl socket");
+		goto on_error;
+	}
+
+	ret = nl_cache_mngr_alloc(app->sk, NETLINK_GENERIC, NL_AUTO_PROVIDE, &app->nl_mngr);
+	if (ret < 0) {
+		DLOG_ERR("Failed allocate cache manager: %s", nl_geterror(ret));
+		goto on_error;
+	}
+
+	app->cache_mngr_fd = nl_cache_mngr_get_fd(app->nl_mngr);
+
+	// Если кэшей в кэш-менеджер добавлено много и/или происходит много
+	// netlink событий - то стандартного размера буфера (32768) может быть
+	// недостаточно.
+	//				           RX       TX
+	ret = nl_socket_set_buffer_size(app->sk, 32*32768, 32*32768);
+	if (ret < 0) {
+		DLOG_ERR("Failed to set socket buffer size: %s",
+			 nl_geterror(ret));
+		goto on_error;
+	}
+
+	DLOG_INFO("Adding 'hsr_node' cache to cache manager");
+
+	ret = hnode_alloc_cache(NULL, &hnode_cache);
+	if (ret < 0) {
+		DLOG_ERR("Failed to allocate 'hsr_node' cache: %s",
+		     nl_geterror(ret));
+		goto on_error;
+	}
+
+	printf("\nAsd1\n");
+
+	ret = nl_cache_mngr_add_cache_v2(app->nl_mngr, hnode_cache, hnode_cache_change_cb, app);
+	if (ret < 0) {
+		DLOG_ERR("Failed to add 'hsr_node' cache to manager: %s",
+			 nl_geterror(ret));
+		nl_cache_free(hnode_cache);
+		goto on_error;
+	
+	} 
+	
+	ret = fill_all(app);
+	
+
+	printf("\nAsd2\n");
+	
+	// После такого создания кэш-менеджера и добавления в него кэшей
+	// доступ к кэшу в любом месте в программе можно делать так:
+	// link_cache = nl_cache_mngt_require_safe("route/link")
+	// или
+	// link_cache = __nl_cache_mngt_require("route/link")
+	// в чем отличие - см. libnl
+
 	return app;
 on_error:
 	app_destroy(app);
@@ -381,7 +301,7 @@ int main(int argc, char *argv[])
 {
 	int ret;
 	struct hsr_module *app;
-	int fd;
+	
 
 	opt_ini_or_die(argc, argv);
 
@@ -393,29 +313,39 @@ int main(int argc, char *argv[])
 	if (!app)
 		goto on_error;
 
-	fd = cdb_get_fd(app->cdb);
-	if (fd < 0) {
-		DLOG_ERR("Failed to get file descriptor for confdb\n");
-			return -1;
-	}
-
 	
 	while (keep_running) {
-	
+		int fd;
 		int max_fd;
 		fd_set fds;
+		struct timeval to;
 
+		to.tv_sec = 300;
+		to.tv_usec = 0;
 		FD_ZERO(&fds);
-		FD_SET(fd, &fds);
+		fd = cdb_prepare_select(app->cdb, &fds, &to);
 		max_fd = fd;
 
-		ret = select(max_fd + 1, &fds, NULL, NULL, NULL);
+		FD_SET(app->cache_mngr_fd, &fds);
+		if (app->cache_mngr_fd > max_fd)
+			max_fd = app->cache_mngr_fd;
+
+		ret = select(max_fd + 1, &fds, NULL, NULL, &to);
 		if (ret < 0) {
 			if (errno == EINTR)
 				continue;
 
 			DLOG_ERR("Select failed: %s", strerror(errno));
 			goto on_error;
+		}
+
+		if (ret == 0) {
+			ret = cdb_check_timeouts(app->cdb);
+			if (ret < 0) {
+				DLOG_ERR("RPC timeout handling error");
+				goto on_error;
+			}
+			continue;
 		}
 
 		ret = cdb_dispatch(app->cdb, &fds);
@@ -425,6 +355,16 @@ int main(int argc, char *argv[])
 		} else if (ret < 0) {
 			DLOG_ERR("cdb_dispatch failed: %s", cdb_strerror(ret));
 			goto on_error;
+		}
+
+		if (FD_ISSET(app->cache_mngr_fd, &fds)) {
+			printf("\nFD_ISSET\n");
+			ret = nl_cache_mngr_data_ready(app->nl_mngr);
+			if (ret < 0) {
+				DLOG_ERR("Failed to process NL messages: %s",
+					 nl_geterror(ret));
+				goto on_error;
+			}
 		}
 	}
 

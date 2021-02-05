@@ -494,7 +494,7 @@ struct nlattr *nla_reserve(struct nl_msg *msg, int attrtype, int attrlen)
 int nla_put(struct nl_msg *msg, int attrtype, int datalen, const void *data)
 {
 	struct nlattr *nla;
-
+	
 	nla = nla_reserve(msg, attrtype, datalen);
 	if (!nla) {
 		if (datalen < 0)

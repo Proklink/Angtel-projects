@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <liblogging/stdlog.h>
 #include <jansson.h>
+#include <netlink/object.h>
 
 extern stdlog_channel_t debug_logger;
 extern unsigned int debug_level;
@@ -15,6 +16,9 @@ int dlog(const int severity, const char *fmt, ...)
 int dlog_jerr(const json_error_t *err, const int severity, const char *fmt,
 	      ...) __attribute__((format(printf, 3, 4)));
 void dlog_json_dump(int sev, json_t *jv, const char *ttl);
+void dlog_cache_change(const char *cache_name, int log_level,
+		       struct nl_object *obj, uint64_t attr_diff, int nl_act,
+		       enum nl_dump_type type);
 
 #ifndef APP_LOG_NAME
 #define DLOG(severity, fmt, ...) \

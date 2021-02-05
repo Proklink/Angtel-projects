@@ -37,11 +37,8 @@
         </error-message>
       </must>
       <list name="node_list">
-        <key value="index"/>
+        <key value="mac-address"/>
         <config value="false"/>
-        <leaf name="index">
-          <type name="uint32"/>
-        </leaf>
         <leaf name="mac-address">
           <type name="yang:mac-address"/>
           <description>

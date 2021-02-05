@@ -180,9 +180,8 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 AM_RECURSIVE_TARGETS = cscope
-am__DIST_COMMON = $(srcdir)/Makefile.in AUTHORS COPYING ChangeLog \
-	INSTALL NEWS README compile config.guess config.sub depcomp \
-	install-sh ltmain.sh missing
+am__DIST_COMMON = $(srcdir)/Makefile.in compile config.guess \
+	config.sub depcomp install-sh ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -200,13 +199,13 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/root/applications/danil/hsr_node_tests/missing aclocal-1.16
+ACLOCAL = ${SHELL} /home/root/applications/part1/hsr_node_tests/missing aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
 AR = ar
-AUTOCONF = ${SHELL} /home/root/applications/danil/hsr_node_tests/missing autoconf
-AUTOHEADER = ${SHELL} /home/root/applications/danil/hsr_node_tests/missing autoheader
-AUTOMAKE = ${SHELL} /home/root/applications/danil/hsr_node_tests/missing automake-1.16
+AUTOCONF = ${SHELL} /home/root/applications/part1/hsr_node_tests/missing autoconf
+AUTOHEADER = ${SHELL} /home/root/applications/part1/hsr_node_tests/missing autoheader
+AUTOMAKE = ${SHELL} /home/root/applications/part1/hsr_node_tests/missing automake-1.16
 AWK = awk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -233,10 +232,10 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LD = /usr/x86_64-oe-linux-musl/bin/ld -m elf_x86_64
 LDFLAGS = 
-LIBNL_CFLAGS = -I/usr/local/include/libnl3
-LIBNL_CLI_CFLAGS = -I/usr/local/include -I/usr/local/include/libnl3
-LIBNL_CLI_LIBS = -L/usr/local/lib -lnl-cli-3 -lnl-genl-3 -lnl-nf-3 -lnl-route-3 -lnl-3
-LIBNL_LIBS = -L/usr/local/lib -lnl-route-3 -lnl-3
+LIBNL_CFLAGS = -I/home/root/applications/libnl-build/include/libnl3
+LIBNL_CLI_CFLAGS = -I/home/root/applications/libnl-build/include -I/home/root/applications/libnl-build/include/libnl3
+LIBNL_CLI_LIBS = -L/home/root/applications/libnl-build/lib -lnl-cli-3 -lnl-genl-3 -lnl-nf-3 -lnl-route-3 -lnl-3
+LIBNL_LIBS = -L/home/root/applications/libnl-build/lib -lnl-route-3 -lnl-3
 LIBOBJS = 
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
@@ -244,7 +243,7 @@ LIPO =
 LN_S = ln -s
 LTLIBOBJS = 
 LT_SYS_LIBRARY_PATH = 
-MAKEINFO = ${SHELL} /home/root/applications/danil/hsr_node_tests/missing makeinfo
+MAKEINFO = ${SHELL} /home/root/applications/part1/hsr_node_tests/missing makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/local/bin/nm -B
@@ -263,17 +262,17 @@ PACKAGE_VERSION = 1.0
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/local/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /home/student/projects/applications/danil/libnl-build/lib/pkgconfig
+PKG_CONFIG_PATH = /home/root/applications/libnl-build/lib/pkgconfig
 RANLIB = ranlib
 SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
 VERSION = 1.0
-abs_builddir = /home/root/applications/danil/hsr_node_tests/.build-x86
-abs_srcdir = /home/root/applications/danil/hsr_node_tests/.build-x86/..
-abs_top_builddir = /home/root/applications/danil/hsr_node_tests/.build-x86
-abs_top_srcdir = /home/root/applications/danil/hsr_node_tests/.build-x86/..
+abs_builddir = /home/root/applications/part1/hsr_node_tests/.build-x86
+abs_srcdir = /home/root/applications/part1/hsr_node_tests/.build-x86/..
+abs_top_builddir = /home/root/applications/part1/hsr_node_tests/.build-x86
+abs_top_srcdir = /home/root/applications/part1/hsr_node_tests/.build-x86/..
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_DUMPBIN = 
@@ -302,7 +301,7 @@ host_vendor = pc
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/root/applications/danil/hsr_node_tests/install-sh
+install_sh = ${SHELL} /home/root/applications/part1/hsr_node_tests/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -329,9 +328,9 @@ hsr_nodes_LDADD = $(LIBNL_LIBS) \
 
 hsr_nodes_CFLAGS = $(LIBNL_CFLAGS) \
                          $(LIBNL_CLI_CFLAGS) \
-                         -I /home/root/applications/danil/libnl-build/include/libnl3
+                         -I /home/root/applications/libnl-build/include/libnl3
 
-hsr_nodes_LDFLAGS = -L/home/root/applications/danil/libnl-build/lib                         
+hsr_nodes_LDFLAGS = -L/home/root/applications/libnl-build/lib                         
 AM_CFLAGS = -Wall
 all: all-am
 

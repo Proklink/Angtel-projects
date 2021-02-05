@@ -1,7 +1,6 @@
  #include <stdio.h>
 #include <netlink/netlink.h>
 #include <netlink/route/link.h>
-//#include <netlink/route/hsr_node.h>
 #include <netlink/cache.h>
 #include <netlink/route/link/hsr.h>
 #include <netlink/genl/hsr_node.h>

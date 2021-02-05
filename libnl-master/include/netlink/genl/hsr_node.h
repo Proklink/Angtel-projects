@@ -5,6 +5,8 @@
 #include <netlink/addr.h>
 #include <sys/types.h>
 
+#include <netlink/route/link/hsr.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -20,6 +22,10 @@ extern int hnode_info_parse(struct hsr_node *node, struct nlattr **tb);
 extern int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result);
 
 extern void hnode_put(struct hsr_node *link);
+
+extern int hnode_get_ifindex(struct hsr_node *node);
+
+extern char *hnode_get_mac_address_A(struct hsr_node *node);
 
 extern struct hsr_node *hnode_alloc(void);
 

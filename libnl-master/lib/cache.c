@@ -244,8 +244,9 @@ int nl_cache_alloc_and_fill(struct nl_cache_ops *ops, struct nl_sock *sock,
 		nl_cache_free(cache);
 		return err;
 	}
-
+	printf("\n247_nl_cache_alloc_and_fill\n");
 	*result = cache;
+	printf("\n249_nl_cache_alloc_and_fill\n");
 	return 0;
 }
 
@@ -666,7 +667,7 @@ static int update_msg_parser(struct nl_msg *msg, void *arg)
 {
 	struct update_xdata *x = arg;
 	int ret = 0;
-	printf("update_msg_parser\n");
+
 	ret = nl_cache_parse(x->ops, &msg->nm_src, msg->nm_nlh, x->params);
 	if (ret == -NLE_EXIST)
 		return NL_SKIP;

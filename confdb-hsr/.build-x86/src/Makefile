@@ -104,7 +104,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_example_OBJECTS = example-main.$(OBJEXT) example-log.$(OBJEXT) \
-	example-utils.$(OBJEXT) example-apply_conf.$(OBJEXT)
+	example-utils.$(OBJEXT) example-apply_conf.$(OBJEXT) \
+	example-status.$(OBJEXT)
 example_OBJECTS = $(am_example_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -135,7 +136,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/example-apply_conf.Po \
 	./$(DEPDIR)/example-log.Po ./$(DEPDIR)/example-main.Po \
-	./$(DEPDIR)/example-utils.Po
+	./$(DEPDIR)/example-status.Po ./$(DEPDIR)/example-utils.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -344,6 +345,7 @@ example_SOURCES = \
 	log.c \
 	utils.c \
 	apply_conf.c \
+	status.c \
 	$(NULL)
 
 example_LDADD = \
@@ -464,6 +466,7 @@ distclean-compile:
 include ./$(DEPDIR)/example-apply_conf.Po # am--include-marker
 include ./$(DEPDIR)/example-log.Po # am--include-marker
 include ./$(DEPDIR)/example-main.Po # am--include-marker
+include ./$(DEPDIR)/example-status.Po # am--include-marker
 include ./$(DEPDIR)/example-utils.Po # am--include-marker
 
 $(am__depfiles_remade):
@@ -548,6 +551,20 @@ example-apply_conf.obj: apply_conf.c
 #	$(AM_V_CC)source='apply_conf.c' object='example-apply_conf.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-apply_conf.obj `if test -f 'apply_conf.c'; then $(CYGPATH_W) 'apply_conf.c'; else $(CYGPATH_W) '$(srcdir)/apply_conf.c'; fi`
+
+example-status.o: status.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-status.o -MD -MP -MF $(DEPDIR)/example-status.Tpo -c -o example-status.o `test -f 'status.c' || echo '$(srcdir)/'`status.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/example-status.Tpo $(DEPDIR)/example-status.Po
+#	$(AM_V_CC)source='status.c' object='example-status.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-status.o `test -f 'status.c' || echo '$(srcdir)/'`status.c
+
+example-status.obj: status.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-status.obj -MD -MP -MF $(DEPDIR)/example-status.Tpo -c -o example-status.obj `if test -f 'status.c'; then $(CYGPATH_W) 'status.c'; else $(CYGPATH_W) '$(srcdir)/status.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/example-status.Tpo $(DEPDIR)/example-status.Po
+#	$(AM_V_CC)source='status.c' object='example-status.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-status.obj `if test -f 'status.c'; then $(CYGPATH_W) 'status.c'; else $(CYGPATH_W) '$(srcdir)/status.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -685,6 +702,7 @@ distclean: distclean-am
 		-rm -f ./$(DEPDIR)/example-apply_conf.Po
 	-rm -f ./$(DEPDIR)/example-log.Po
 	-rm -f ./$(DEPDIR)/example-main.Po
+	-rm -f ./$(DEPDIR)/example-status.Po
 	-rm -f ./$(DEPDIR)/example-utils.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -734,6 +752,7 @@ maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/example-apply_conf.Po
 	-rm -f ./$(DEPDIR)/example-log.Po
 	-rm -f ./$(DEPDIR)/example-main.Po
+	-rm -f ./$(DEPDIR)/example-status.Po
 	-rm -f ./$(DEPDIR)/example-utils.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

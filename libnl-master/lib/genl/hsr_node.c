@@ -14,6 +14,7 @@
 #include <netlink/msg.h>
 #include <netlink/addr.h>
 #include <netlink/attr.h>
+#include <stdbool.h>
 
 
 #define HNODE_ATTR_ADDR_A			(1 <<  0)
@@ -33,6 +34,8 @@
 
 static struct nl_cache_ops hsr_node_ops;
 static struct nl_object_ops hnode_obj_ops;
+static uint32_t add_interface_ifindex;
+
 
 struct nla_policy hnode_policy[HSR_A_MAX + 1] = {
 	[HSR_A_IFINDEX] = { .type = NLA_U32 },
@@ -66,7 +69,7 @@ static int hnode_clone(struct nl_object *_dst, struct nl_object *_src)
 {	
 	struct hsr_node *dst = nl_object_priv(_dst);
 	struct hsr_node *src = nl_object_priv(_src);
-	//int err;
+
 
 	if (src->MAC_address_A)
 		if (!(dst->MAC_address_A = nl_addr_clone(src->MAC_address_A)))
@@ -129,6 +132,20 @@ static void hnode_dump_line(struct nl_object *obj, struct nl_dump_params *p)
 
 }
 
+int hnode_get_ifindex(struct hsr_node *node) {
+
+	return node->hn_ifindex;
+
+}
+
+char *hnode_get_mac_address_A(struct hsr_node *node) {
+
+	char buf[128];
+
+	return nl_addr2str(node->MAC_address_A, buf, sizeof(buf));
+
+}
+
 static void hnode_dump_details(struct nl_object *obj, struct nl_dump_params *p)
 {
 	struct hsr_node *node = (struct hsr_node *) obj;
@@ -146,13 +163,13 @@ static void hnode_dump_details(struct nl_object *obj, struct nl_dump_params *p)
 		nl_dump(p, "\nSlave1 seq %d", node->hn_slave1_seq);
 
 	if (node->ce_mask & HNODE_ATTR_SLAVE2_SEQ)
-		nl_dump(p, ", slave1 seq %d", node->hn_slave2_seq);
+		nl_dump(p, ", slave2 seq %d", node->hn_slave2_seq);
 
 	if (node->ce_mask & HNODE_ATTR_SLAVE1_AGE)
-		nl_dump(p, "\nSlave1 age %d", node->hn_slave1_seq);
+		nl_dump(p, "\nSlave1 age %d", node->hn_slave1_age);
 
 	if (node->ce_mask & HNODE_ATTR_SLAVE2_AGE)
-		nl_dump(p, ", slave1 age %d", node->hn_slave2_seq);
+		nl_dump(p, ", slave2 age %d", node->hn_slave2_age);
 
 	if (node->ce_mask & HNODE_ATTR_ADDR_B_IFINDEX)
 		nl_dump(p, "\nAddr B index %d", node->hn_addr_B_ifindex);
@@ -238,9 +255,9 @@ static uint32_t get_hsr_interface_index(char *name) {
 	}
 
 	return 0;
-}
+}*/
 
-static int get_hnode_status_v2(struct hsr_node *node, struct nl_sock *sk, struct nl_cache *cache) {
+/*static int get_hnode_status_v2(struct hsr_node *node, struct nl_sock *sk, struct nl_cache *cache) {
 		char buf[128];
 		int err;
 		struct nl_msg *msg = NULL;
@@ -281,50 +298,102 @@ static int get_hnode_status_v2(struct hsr_node *node, struct nl_sock *sk, struct
 }
 */
 
+/*int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
+{
+	int ret;
+	struct nl_sock *sock;
+	struct nl_cache *link_cache;
+	struct rtnl_link *link;
+	
+	int size = 0;
+
+	add_interface_ifindex = -1;
+	
+	int *added_interfaces = NULL;
+	
+	sock = nl_socket_alloc();
+	if ((ret = nl_connect(sock, NETLINK_ROUTE)) < 0) {
+		goto _error;
+	}
+
+	if ((ret = rtnl_link_alloc_cache(sock, AF_UNSPEC, &link_cache)) < 0)
+		goto _error;
+
+	if (!(*result = nl_cache_alloc(&hsr_node_ops))) {
+		ret = -NLE_NOMEM;
+		goto _error;
+	}
+
+	nl_list_for_each_entry(link, &link_cache->c_items, ce_list) {
+	
+		if (!rtnl_link_is_hsr(link))
+			continue;
+		
+		bool isContinue = false;
+
+		if (added_interfaces != NULL)
+			for (int i = 0; i < size; i++) {
+				if (rtnl_link_get_ifindex(link) == added_interfaces[i]) {
+					isContinue = true;
+					break;
+				}
+
+			}
+		
+
+		if (isContinue) {
+			continue;
+		
+		} else {
+
+			add_interface_ifindex = rtnl_link_get_ifindex(link);
+
+			struct nl_cache *temp_result = NULL;
+
+			ret = nl_cache_alloc_and_fill(&hsr_node_ops, sk, &temp_result);
+			if (ret < 0)
+				goto _error;
+
+			if (temp_result == NULL)
+				goto _error;
+		
+			added_interfaces = (int *)realloc(added_interfaces, (size++) * sizeof(int));
+			added_interfaces[size-1] = add_interface_ifindex;
+
+			struct nl_object *obj;
+			
+			nl_list_for_each_entry(obj, &temp_result->c_items, ce_list) {
+				ret = nl_cache_add(*result, obj);
+				if (ret < 0)
+					goto _error;
+				
+			}
+		}
+		
+	}
+	
+	printf("\nno error in hnode_alloc_cache\n");
+_error:
+	
+	//nl_cache_put(link_cache);
+	nl_close(sock);
+	free(added_interfaces);
+	return ret;	
+}*/
+
 int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 {
-	int err;
-	err = nl_cache_alloc_and_fill(&hsr_node_ops, sk, result);
-	if (err < 0)
-		return err;
 	
-	// err = get_hnode_status(sk, *result);
-	// if (err < 0)
-	// 	return err;
+	int ret = nl_cache_alloc_and_fill(&hsr_node_ops, sk, result);
+	if (ret < 0)
+		return ret;
 
 	return 0;	
 }
 
-/*static struct nl_addr *nl_addr_build_v2(int family, size_t size) {
-
-	struct nl_addr *addr;
-
-	addr = nl_addr_alloc(size);
-	if (!addr)
-		return NULL;
-
-	addr->a_family = family;
-	addr->a_len = size;
-	printf("Addr:\naddr->a_family = %d, addr->a_len = %d\n", addr->a_family, addr->a_len);
-
-	addr->a_prefixlen = size*8;
-	printf("size = %ld, addr->a_prefixlen = %d\n", size, addr->a_prefixlen);
-	
-
-	addr->a_addr[0] = 0xc8;
-	addr->a_addr[1] = 0x60;
-	addr->a_addr[2] = 0x0;
-	addr->a_addr[3] = 0xbf;
-	addr->a_addr[4] = 0x72;
-	addr->a_addr[5] = 0xe3;
-	
-
-	return addr;
-}*/
 
 static int hnode_request_update(struct nl_cache *c, struct nl_sock *h)
 {
-	
 	int err;
 	struct nl_msg *msg = NULL;
 
@@ -341,48 +410,17 @@ static int hnode_request_update(struct nl_cache *c, struct nl_sock *h)
 	}
 
 	//добавить атрибут
-	err = nla_put_u32(msg, HSR_A_IFINDEX, 2);//get_hsr_interface_index("hsr0")
+	err = nla_put_u32(msg, HSR_A_IFINDEX, get_hsr_interface_index("hsr0"));
 	if (err < 0)
 		return err;
+
 
 	//отправить сообщение
 	err = nl_send_auto(h, msg);
 	if (err < 0)
 		return err;
-
-	/*struct nl_msg *msg = NULL;
-		int err;
-		char buf[128];
-		struct nl_dump_params dp = {
-		.dp_type = NL_DUMP_DETAILS ,
-		.dp_fd = stdout,
-		};
-		struct nl_addr *addr = nl_addr_build_v2(0, (size_t)6);
-
-		msg = nlmsg_alloc();
-		if (!msg)
-			return -NLE_NOMEM;
-		
-		if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, GENL_ID_HSR,
-				0, 0, HSR_C_GET_NODE_STATUS, HSR_VERSION)) {
-			BUG();
-			return -NLE_MSGSIZE;
-		}
-		
-		err = nla_put_addr(msg, HSR_A_NODE_ADDR, addr);
-		if (err < 0)
-			return err;
-		nl_dump(&dp, "MAC_address_A: %s\n", nl_addr2str(addr, buf, sizeof(buf)));
-		
-
-		err = nla_put_u32(msg, HSR_A_IFINDEX, 2);//get_hsr_interface_index("hsr0")
-		if (err < 0)
-			return err;
 	
-		err = nl_send_auto(h, msg);
-		if (err < 0)
-			return err;*/
-
+		
 	return 0;
 }
 
@@ -467,7 +505,7 @@ int hnode_info_parse(struct hsr_node *node, struct nlattr **tb)
 static int hnode_msg_node_list_parser(struct nl_cache_ops *ops, struct genl_cmd *cmd,
 			   												struct genl_info *info, void *arg)
 {	
-
+	printf("\nhnode_msg_node_list_parser\n");
 	if (info->attrs[HSR_A_IFINDEX] == NULL) 
 		return -NLE_MISSING_ATTR;
 	struct nl_parser_param *pp = arg;
@@ -589,12 +627,18 @@ static struct nl_object_ops hnode_obj_ops = {
 	},
 };
 
+static struct nl_af_group hnode_groups[] = {
+	{ AF_UNSPEC,	0x0b },
+	{ END_OF_GROUP_LIST },
+};
+
 
 static struct nl_cache_ops hsr_node_ops = {
 	.co_name		= "hsr_node",
 	.co_hdrsize		= GENL_HDRSIZE(0),
 	.co_msgtypes		= GENL_FAMILY(GENL_ID_HSR, "HSR"),
 	.co_genl		= &genl_ops,
+	.co_groups		= hnode_groups,
 	.co_protocol		= NETLINK_GENERIC,
 	.co_request_update	= hnode_request_update, 
 	.co_obj_ops		= &hnode_obj_ops,
