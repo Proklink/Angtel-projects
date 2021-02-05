@@ -32,6 +32,7 @@
 #include <netlink/cache.h>
 #include <netlink/utils.h>
 
+
 /** @cond SKIP */
 #define NASSOC_INIT		16
 #define NASSOC_EXPAND		8
@@ -146,6 +147,9 @@ int nl_cache_mngr_alloc(struct nl_sock *sk, int protocol, int flags,
 	mngr = calloc(1, sizeof(*mngr));
 	if (!mngr)
 		return -NLE_NOMEM;
+
+	//added by daniil
+	mngr->refill_cache_on_adding = true;
 
 	if (!sk) {
 		if (!(sk = nl_socket_alloc()))
@@ -334,9 +338,12 @@ int nl_cache_mngr_add_cache(struct nl_cache_mngr *mngr, struct nl_cache *cache,
 			return err;
 	}
 
-	err = nl_cache_refill(mngr->cm_sync_sock, cache);
-	if (err < 0)
-		goto errout_drop_membership;
+	//added by daniil
+	if (mngr->refill_cache_on_adding) {
+		err = nl_cache_refill(mngr->cm_sync_sock, cache);
+		if (err < 0)
+			goto errout_drop_membership;
+	}
 
 	mngr->cm_assocs[i].ca_cache = cache;
 	mngr->cm_assocs[i].ca_change = cb;
@@ -630,6 +637,12 @@ void nl_cache_mngr_free(struct nl_cache_mngr *mngr)
 	NL_DBG(1, "Cache manager %p freed\n", mngr);
 
 	free(mngr);
+}
+
+//added by daniil
+void nl_cache_mngr_refill_cache_on_adding(struct nl_cache_mngr *mngr, bool refill_flag) {
+	if (mngr) 
+		mngr->refill_cache_on_adding = refill_flag;
 }
 
 /** @} */

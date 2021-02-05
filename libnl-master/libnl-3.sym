@@ -94,6 +94,7 @@ global:
 	nl_cache_ops_lookup;
 	nl_cache_ops_lookup_safe;
 	nl_cache_ops_put;
+	nl_cache_mngr_refill_cache_on_adding;
 	nl_cache_ops_set_flags;
 	nl_cache_parse_and_add;
 	nl_cache_pickup;

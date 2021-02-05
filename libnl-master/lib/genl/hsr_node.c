@@ -298,7 +298,7 @@ static uint32_t get_hsr_interface_index(char *name) {
 }
 */
 
-/*int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
+int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 {
 	int ret;
 	struct nl_sock *sock;
@@ -347,7 +347,7 @@ static uint32_t get_hsr_interface_index(char *name) {
 		} else {
 
 			add_interface_ifindex = rtnl_link_get_ifindex(link);
-
+			printf("\n350_add_interface_ifindex = %d\n", add_interface_ifindex);
 			struct nl_cache *temp_result = NULL;
 
 			ret = nl_cache_alloc_and_fill(&hsr_node_ops, sk, &temp_result);
@@ -379,9 +379,9 @@ _error:
 	nl_close(sock);
 	free(added_interfaces);
 	return ret;	
-}*/
+}
 
-int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
+/*int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 {
 	
 	int ret = nl_cache_alloc_and_fill(&hsr_node_ops, sk, result);
@@ -389,7 +389,7 @@ int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 		return ret;
 
 	return 0;	
-}
+}*/
 
 
 static int hnode_request_update(struct nl_cache *c, struct nl_sock *h)
@@ -410,7 +410,7 @@ static int hnode_request_update(struct nl_cache *c, struct nl_sock *h)
 	}
 
 	//добавить атрибут
-	err = nla_put_u32(msg, HSR_A_IFINDEX, get_hsr_interface_index("hsr0"));
+	err = nla_put_u32(msg, HSR_A_IFINDEX, add_interface_ifindex);
 	if (err < 0)
 		return err;
 
@@ -505,7 +505,7 @@ int hnode_info_parse(struct hsr_node *node, struct nlattr **tb)
 static int hnode_msg_node_list_parser(struct nl_cache_ops *ops, struct genl_cmd *cmd,
 			   												struct genl_info *info, void *arg)
 {	
-	printf("\nhnode_msg_node_list_parser\n");
+	
 	if (info->attrs[HSR_A_IFINDEX] == NULL) 
 		return -NLE_MISSING_ATTR;
 	struct nl_parser_param *pp = arg;

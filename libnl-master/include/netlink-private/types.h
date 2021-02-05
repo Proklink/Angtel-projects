@@ -27,6 +27,7 @@
 #include <linux/tc_act/tc_vlan.h>
 #include <linux/sock_diag.h>
 #include <linux/fib_rules.h>
+#include <stdbool.h>
 
 #define NL_SOCK_PASSCRED	(1<<1)
 #define NL_OWN_PORT		(1<<2)
@@ -113,6 +114,8 @@ struct nl_cache_mngr
 	struct nl_sock *	cm_sock;
 	struct nl_sock *	cm_sync_sock;
 	struct nl_cache_assoc *	cm_assocs;
+	//added by daniil
+	bool refill_cache_on_adding;
 };
 
 struct nl_parser_param;

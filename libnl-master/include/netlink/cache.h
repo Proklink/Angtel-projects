@@ -10,6 +10,7 @@
 #include <netlink/msg.h>
 #include <netlink/utils.h>
 #include <netlink/object.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -179,6 +180,8 @@ extern void			nl_cache_ops_get(struct nl_cache_ops *);
 extern void			nl_cache_ops_put(struct nl_cache_ops *);
 extern void			nl_cache_ops_set_flags(struct nl_cache_ops *,
 						       unsigned int);
+extern void nl_cache_mngr_refill_cache_on_adding(struct nl_cache_mngr *mngr, 
+							bool refill_flag);
 
 #ifdef __cplusplus
 }

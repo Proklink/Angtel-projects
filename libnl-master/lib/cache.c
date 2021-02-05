@@ -244,9 +244,9 @@ int nl_cache_alloc_and_fill(struct nl_cache_ops *ops, struct nl_sock *sock,
 		nl_cache_free(cache);
 		return err;
 	}
-	printf("\n247_nl_cache_alloc_and_fill\n");
+
 	*result = cache;
-	printf("\n249_nl_cache_alloc_and_fill\n");
+	
 	return 0;
 }
 
