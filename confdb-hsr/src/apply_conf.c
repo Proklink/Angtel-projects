@@ -2,13 +2,13 @@
 
 
 
-int create_hsr_interface(const char *if_name, const char *slave_1, 
-                            const char *slave_2, const int version) {
+int create_hsr_interface(const char *if_name, const uint32_t slave_1, 
+                            const uint32_t slave_2, const int version) {
 
     struct rtnl_link *link;
-	struct nl_cache *link_cache;
+	//struct nl_cache *link_cache;
 	struct nl_sock *sk;
-	int err, master_index;
+	int err;
 
 	sk = nl_socket_alloc();
 	if ((err = nl_connect(sk, NETLINK_ROUTE)) < 0) {
@@ -16,40 +16,40 @@ int create_hsr_interface(const char *if_name, const char *slave_1,
 		return err;
 	}
 	
-	if ((err = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
-		nl_perror(err, "Unable to allocate cache");
-		return err;
-	}
+	// if ((err = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
+	// 	nl_perror(err, "Unable to allocate cache");
+	// 	return err;
+	// }
 
 	link = rtnl_link_hsr_alloc();
 
 	rtnl_link_set_name(link, if_name);
-	
 
 	rtnl_link_hsr_set_version(link, version);
 	
 
-    if (!(master_index = rtnl_link_name2i(link_cache, slave_1))) {
-		fprintf(stderr, "Unable to lookup eth0");
-		return -1;
-	}
+    // if (!(master_index = rtnl_link_name2i(link_cache, slave_1))) {
+	// 	fprintf(stderr, "Unable to lookup eth0");
+	// 	return -1;
+	// }
 
-	rtnl_link_hsr_set_slave1(link, master_index);
-	master_index = 0;
+	rtnl_link_hsr_set_slave1(link, slave_1);
+	//master_index = 0;
 
-	if (!(master_index = rtnl_link_name2i(link_cache, slave_2))) {
-		fprintf(stderr, "Unable to lookup eth1");
-		return -1;
-	}
+	// if (!(master_index = rtnl_link_name2i(link_cache, slave_2))) {
+	// 	fprintf(stderr, "Unable to lookup eth1");
+	// 	return -1;
+	// }
 
-	rtnl_link_hsr_set_slave2(link, master_index);
+	rtnl_link_hsr_set_slave2(link, slave_2);
 
+	printf("\n46_rtnl_link_add\n");
 	if ((err = rtnl_link_add(sk, link, NLM_F_CREATE)) < 0) {
 		fprintf(stderr, "err = %d\n", err);
 		nl_perror(err, "Unable to add link");
 		return err;
 	}
-
+	printf("\n52_rtnl_link_add\n");
 	rtnl_link_put(link);
 	nl_close(sk);
 
@@ -86,7 +86,7 @@ int delete_hsr_interface(const char *if_name) {
 }
 
 
-int change_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link, 
+/*int change_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link, 
 								struct rtnl_link *slave_1_link, struct rtnl_link *slave_2_link) {
 		
 		bool isChanges = false;
@@ -151,7 +151,7 @@ int change_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link,
 		rtnl_link_put(new_hsr_link);
 		return 0;
 		
-}
+}*/
 
 int change_analysis(const char *if_name, const char *slave_1_name, const char *slave_2_name) {
 
@@ -175,7 +175,7 @@ int change_analysis(const char *if_name, const char *slave_1_name, const char *s
 	slave_1_link = rtnl_link_get_by_name(link_cache, slave_1_name);
 	slave_2_link = rtnl_link_get_by_name(link_cache, slave_2_name);
 		
-	printf("\n178_create_hsr_interface\n");
+
 	if ((slave_1_link == NULL) || (slave_2_link == NULL))
 		return -1;
 	printf("\n181_create_hsr_interface\n");
@@ -185,15 +185,24 @@ int change_analysis(const char *if_name, const char *slave_1_name, const char *s
 
 	if (hsr_link == NULL) {
 
-		err = create_hsr_interface(if_name, slave_1_name, slave_2_name, 1);
+		err = create_hsr_interface(if_name, rtnl_link_get_ifindex(slave_1_link), 
+												rtnl_link_get_ifindex(slave_2_link), 1);
 		if (err < 0) {
-			printf("\n188_create_hsr_interface\n");
 			return err;
 
 		}
 
+		err = add_interface_to_cache(if_name);
+		if (err < 0) {
+			return err;
+
+		}
 	}
 
+	printf("\n199_nl_cache_put\n");
+	nl_cache_put(link_cache);
+	printf("\n199_nl_cache_put\n");
+	nl_close(sk);
 	return 0;
 
 }

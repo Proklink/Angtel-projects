@@ -5,7 +5,7 @@
 #include <sys/select.h>
 #include <signal.h>
 #include <stdatomic.h>
-
+#include <stdbool.h>
 
 #include <jansson.h>
 
@@ -14,12 +14,10 @@
 
 #include <netlink/route/link.h>
 
-
-
 #include "log.h"
 #include "apply_conf.h"
 #include "utils.h"
-#include "status.h"
+//#include "status.h"
 
 
 static volatile atomic_int keep_running;
@@ -34,7 +32,7 @@ static void hnode_cache_change_cb(struct nl_cache *cache,
 	dlog_cache_change("hsr_node", STDLOG_INFO, n_obj ?: o_obj, attr_diff,
 			  nl_act, NL_DUMP_LINE);
 
-	printf("\nasdfg\n");
+	printf("\nhnode_cache_change_cb\n");
 
 	struct hsr_module *app = data;
 
@@ -113,7 +111,7 @@ static void opt_free(void)
 }
 
 
-static int 	hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
+static int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 {
 	/* Получение приватных данных модуля hsr программы configd. */
 	
@@ -158,9 +156,10 @@ static int 	hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data
 
 		ret = change_analysis(interface_name, slave_a, slave_b);
 		if (ret < 0) {
-			printf("\n161_change_analysis\n");
 			return ret;
 		}
+
+
 		
 	} else {
 		/* Данные удалены. */
@@ -169,7 +168,6 @@ static int 	hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data
 		delete_hsr_interface(interface_name);
 	}
 
-	printf("\nasdasd2\n");
 	return 0;
 }
 
@@ -241,6 +239,8 @@ static struct hsr_module *app_create(void)
 		goto on_error;
 	}
 
+	nl_cache_mngr_refill_cache_on_adding(app->nl_mngr, false);
+
 	app->cache_mngr_fd = nl_cache_mngr_get_fd(app->nl_mngr);
 
 	// Если кэшей в кэш-менеджер добавлено много и/или происходит много
@@ -256,7 +256,7 @@ static struct hsr_module *app_create(void)
 
 	DLOG_INFO("Adding 'hsr_node' cache to cache manager");
 
-	ret = hnode_alloc_cache(NULL, &hnode_cache);
+	ret = hnode_alloc_cache(app->sk, &hnode_cache);
 	if (ret < 0) {
 		DLOG_ERR("Failed to allocate 'hsr_node' cache: %s",
 		     nl_geterror(ret));
@@ -360,6 +360,7 @@ int main(int argc, char *argv[])
 		if (FD_ISSET(app->cache_mngr_fd, &fds)) {
 			printf("\nFD_ISSET\n");
 			ret = nl_cache_mngr_data_ready(app->nl_mngr);
+			printf("\n%d\n", ret);
 			if (ret < 0) {
 				DLOG_ERR("Failed to process NL messages: %s",
 					 nl_geterror(ret));
