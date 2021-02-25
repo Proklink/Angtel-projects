@@ -115,7 +115,7 @@ static int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 {
 	/* Получение приватных данных модуля hsr программы configd. */
 	
-	//struct hsr_module *app = data;
+	struct hsr_module *app = data;
 	const char *interface_name;
 	
 	int ret;
@@ -147,25 +147,25 @@ static int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 				  json_error.text, json_error.source,
 				  json_error.line, json_error.column);
 			return -1;
-
-
 		}
 
 		/* Здесь можно добавить какие-то полезные действия. */
 		printf("slave-a: %s, slave-b: %s\n\n", slave_a, slave_b);
 
-		ret = change_analysis(interface_name, slave_a, slave_b);
+		ret = change_analysis(app, interface_name, slave_a, slave_b);
 		if (ret < 0) {
 			return ret;
 		}
 
-
-		
 	} else {
 		/* Данные удалены. */
 		printf("Data deleted: %s\n", interface_name);
 
 		delete_hsr_interface(interface_name);
+
+		struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
+
+		nl_cache_clear(mngr_hnode_cache);
 	}
 
 	return 0;
@@ -274,7 +274,7 @@ static struct hsr_module *app_create(void)
 	
 	} 
 	
-	ret = fill_all(app);
+	//ret = fill_all(app);
 	
 
 	printf("\nAsd2\n");
@@ -313,7 +313,6 @@ int main(int argc, char *argv[])
 	if (!app)
 		goto on_error;
 
-	
 	while (keep_running) {
 		int fd;
 		int max_fd;

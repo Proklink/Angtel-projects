@@ -1,59 +1,49 @@
 #include "apply_conf.h"
-
+#include <unistd.h>
 
 
 int create_hsr_interface(const char *if_name, const uint32_t slave_1, 
                             const uint32_t slave_2, const int version) {
 
     struct rtnl_link *link;
-	//struct nl_cache *link_cache;
+
 	struct nl_sock *sk;
-	int err;
+	int ret;
 
 	sk = nl_socket_alloc();
-	if ((err = nl_connect(sk, NETLINK_ROUTE)) < 0) {
-		nl_perror(err, "Unable to connect socket");
-		return err;
+	if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
+		nl_perror(ret, "Unable to connect socket");
+		goto _error;
 	}
 	
-	// if ((err = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
-	// 	nl_perror(err, "Unable to allocate cache");
-	// 	return err;
-	// }
 
 	link = rtnl_link_hsr_alloc();
 
 	rtnl_link_set_name(link, if_name);
 
 	rtnl_link_hsr_set_version(link, version);
-	
-
-    // if (!(master_index = rtnl_link_name2i(link_cache, slave_1))) {
-	// 	fprintf(stderr, "Unable to lookup eth0");
-	// 	return -1;
-	// }
 
 	rtnl_link_hsr_set_slave1(link, slave_1);
-	//master_index = 0;
-
-	// if (!(master_index = rtnl_link_name2i(link_cache, slave_2))) {
-	// 	fprintf(stderr, "Unable to lookup eth1");
-	// 	return -1;
-	// }
 
 	rtnl_link_hsr_set_slave2(link, slave_2);
 
+	rtnl_link_set_operstate(link, IF_OPER_UP);
+
 	printf("\n46_rtnl_link_add\n");
-	if ((err = rtnl_link_add(sk, link, NLM_F_CREATE)) < 0) {
-		fprintf(stderr, "err = %d\n", err);
-		nl_perror(err, "Unable to add link");
-		return err;
+	if ((ret = rtnl_link_add(sk, link, NLM_F_CREATE)) < 0) {
+		//fprintf(stderr, "err = %d\n", err);
+		nl_perror(ret, "Unable to add link");
+		goto _error;
 	}
 	printf("\n52_rtnl_link_add\n");
+
+
+	ret = 0;
+_error:
 	rtnl_link_put(link);
 	nl_close(sk);
 
-	return 0;
+	return ret;
 }
 
 
@@ -153,23 +143,24 @@ int delete_hsr_interface(const char *if_name) {
 		
 }*/
 
-int change_analysis(const char *if_name, const char *slave_1_name, const char *slave_2_name) {
+int change_analysis(struct hsr_module *app, const char *if_name, 
+								const char *slave_1_name, const char *slave_2_name) {
 
 	struct rtnl_link *hsr_link;
 	struct nl_cache *link_cache;
 	struct nl_sock *sk;
 	struct rtnl_link *slave_1_link, *slave_2_link;
-	int err;
+	int ret;
 
 	sk = nl_socket_alloc();
-	if ((err = nl_connect(sk, NETLINK_ROUTE)) < 0) {
-		nl_perror(err, "Unable to connect socket");
-		return err;
+	if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
+		nl_perror(ret, "Unable to connect socket");
+		goto _error;
 	}
 
-	if ((err = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
-		nl_perror(err, "Unable to allocate cache");
-		return err;
+	if ((ret = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
+		nl_perror(ret, "Unable to allocate cache");
+		goto _error;
 	}
 
 	slave_1_link = rtnl_link_get_by_name(link_cache, slave_1_name);
@@ -177,33 +168,37 @@ int change_analysis(const char *if_name, const char *slave_1_name, const char *s
 		
 
 	if ((slave_1_link == NULL) || (slave_2_link == NULL))
-		return -1;
-	printf("\n181_create_hsr_interface\n");
+		goto _error;
+	printf("\n170_change_analysis rtnl_link_get_by_name %s\n", if_name);
 
 	hsr_link = rtnl_link_get_by_name(link_cache, if_name);
-
-
+	
 	if (hsr_link == NULL) {
-
-		err = create_hsr_interface(if_name, rtnl_link_get_ifindex(slave_1_link), 
+	//printf("\n176_create_hsr_interface \n");
+		ret = create_hsr_interface(if_name, rtnl_link_get_ifindex(slave_1_link), 
 												rtnl_link_get_ifindex(slave_2_link), 1);
-		if (err < 0) {
-			return err;
+		if (ret < 0) {
+			goto _error;
 
 		}
 
-		err = add_interface_to_cache(if_name);
-		if (err < 0) {
-			return err;
-
-		}
+		printf("\n180_create_hsr_interface created\n");
+		sleep(5);
 	}
 
-	printf("\n199_nl_cache_put\n");
-	nl_cache_put(link_cache);
-	printf("\n199_nl_cache_put\n");
+	ret = add_interface_nodes_to_cache(app, if_name);
+	if (ret < 0) {
+		goto _error;
+	}
+
+
+	ret = 0;
+_error:
+	//printf("\n197_change_analysis  nl_cache_put\n");
+	//nl_cache_put(link_cache);
+	printf("\n199_change_analysis  nl_cache_put\n");
 	nl_close(sk);
-	return 0;
+	return ret;
 
 }
 

@@ -792,6 +792,8 @@ static int cache_include(struct nl_cache *cache, struct nl_object *obj,
 	struct nl_object *clone = NULL;
 	uint64_t diff = 0;
 
+	printf("\n795_cache_include cache.c\n");
+
 	switch (type->mt_act) {
 	case NL_ACT_NEW:
 	case NL_ACT_DEL:

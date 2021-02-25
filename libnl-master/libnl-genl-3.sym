@@ -29,9 +29,11 @@ global:
 	hnode_alloc;
 	hnode_alloc_cache_flags;
 	hnode_alloc_cache;
+	hnode_alloc_cache_for_interface;
 	hnode_info_parse;
 	hnode_get_ifindex;
 	hnode_get_mac_address_A;
+	hnode_get_by_addr_ifindex;
 	genl_handle_msg;
 	genl_mngt_resolve;
 	genl_op2name;

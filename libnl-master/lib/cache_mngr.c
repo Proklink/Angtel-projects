@@ -95,14 +95,14 @@ static int event_input(struct nl_msg *msg, void *arg)
 					goto found;
 		}
 	}
-
+	printf("\n92_cache_mngr.c\n");
 	return NL_SKIP;
 
 found:
 	NL_DBG(2, "Associated message %p to cache %p\n",
 	       msg, mngr->cm_assocs[i].ca_cache);
 	p.pp_arg = &mngr->cm_assocs[i];
-
+	printf("\n105_cache_mngr.c\n");
 	return nl_cache_parse(ops, NULL, nlmsg_hdr(msg), &p);
 }
 
@@ -555,7 +555,7 @@ int nl_cache_mngr_data_ready(struct nl_cache_mngr *mngr)
 	nl_cb_put(cb);
 	if (err < 0 && err != -NLE_AGAIN)
 		return err;
-
+	printf("\n558_cache_mngr, err = %d\n", err);
 	return nread;
 }
 

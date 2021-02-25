@@ -21,6 +21,10 @@ extern int hnode_info_parse(struct hsr_node *node, struct nlattr **tb);
 
 extern int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result);
 
+extern int hnode_alloc_cache_for_interface(struct nl_sock *sk, struct nl_cache **result, int ifindex);
+extern	struct hsr_node *hnode_get_by_addr_ifindex(struct nl_cache *cache, 
+													const uint8_t ifindex, const char *addr);
+
 extern void hnode_put(struct hsr_node *link);
 
 extern int hnode_get_ifindex(struct hsr_node *node);

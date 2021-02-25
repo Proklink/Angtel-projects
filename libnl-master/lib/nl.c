@@ -841,7 +841,7 @@ continue_reading:
 	else
 		n = nl_recv(sk, &nla, &buf, &creds);
 
-	if (n <= 0) {
+	if (n <= 0) {printf("\n844_nl.c\n");
 		return n;}
 	
 	NL_DBG(3, "recvmsgs(%p): Read %d bytes\n", sk, n);

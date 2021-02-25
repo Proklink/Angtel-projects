@@ -9,6 +9,7 @@
 #include <netlink/genl/hsr_node.h>
 #include <netlink/utils.h>
 #include <linux/netlink.h>
+#include <linux/if.h>
 
 
 #include "status.h"
@@ -21,8 +22,8 @@ int delete_hsr_interface(const char *if_name);
 // int change_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link, 
 // 								struct rtnl_link *slave_1_link, struct rtnl_link *slave_2_link);
 
-int change_analysis(const char *if_name, const char *slave_1_name, 
-                            const char *slave_2_name);
+int change_analysis(struct hsr_module *app, const char *if_name, 
+                            const char *slave_1_name, const char *slave_2_name);
 
 
 

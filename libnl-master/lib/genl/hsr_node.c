@@ -392,6 +392,21 @@ _error:
 }*/
 
 
+int hnode_alloc_cache_for_interface(struct nl_sock *sk, struct nl_cache **result, int ifindex)
+{
+	if (ifindex < 1)
+		return -1;
+
+	add_interface_ifindex = ifindex; //need check for exists interface with that ifindex
+
+	int ret = nl_cache_alloc_and_fill(&hsr_node_ops, sk, result);
+	if (ret < 0)
+		return ret;
+
+	return 0;	
+}
+
+
 static int hnode_request_update(struct nl_cache *c, struct nl_sock *h)
 {
 	int err;
@@ -423,6 +438,26 @@ static int hnode_request_update(struct nl_cache *c, struct nl_sock *h)
 		
 	return 0;
 }
+
+	struct hsr_node *hnode_get_by_addr_ifindex(struct nl_cache *cache, 
+													const uint8_t ifindex, const char *addr)
+	{
+		struct hsr_node *node;
+
+		if (cache->c_ops != &hsr_node_ops)
+			return NULL;
+
+		nl_list_for_each_entry(node, &cache->c_items, ce_list) {
+			if (!strcmp(addr, hnode_get_mac_address_A(node))) {
+				if (ifindex == hnode_get_ifindex(node)) {
+					nl_object_get((struct nl_object *) node);
+					return node;
+				}
+			}
+		}
+
+		return NULL;
+	}
 
 int hnode_info_parse(struct hsr_node *node, struct nlattr **tb)
 {
@@ -628,7 +663,7 @@ static struct nl_object_ops hnode_obj_ops = {
 };
 
 static struct nl_af_group hnode_groups[] = {
-	{ AF_UNSPEC,	0x0b },
+	{ AF_UNSPEC,	0x06 },
 	{ END_OF_GROUP_LIST },
 };
 
