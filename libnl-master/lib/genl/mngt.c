@@ -51,8 +51,12 @@ static int cmd_msg_parser(struct sockaddr_nl *who, struct nlmsghdr *nlh,
 
 	ghdr = genlmsg_hdr(nlh);
 
+	printf("\nghdr->cmd = %d\n", ghdr->cmd);	
+
 	if (!(cmd = lookup_cmd(ops, ghdr->cmd)))
 		return -NLE_MSGTYPE_NOSUPPORT;
+
+	printf("\nlookup_cmd(ops, ghdr->cmd) = %d\n", lookup_cmd(ops, ghdr->cmd) == NULL);
 
 	if (cmd->c_msg_parser == NULL)
 		return -NLE_OPNOTSUPP;

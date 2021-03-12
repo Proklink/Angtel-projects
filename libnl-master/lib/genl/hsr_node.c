@@ -30,7 +30,7 @@
 
 #define HSR_VERSION		0x0001
 
-#define GENL_ID_HSR 	31//0x1f
+#define GENL_ID_HSR 	0x001e//0x1f
 
 static struct nl_cache_ops hsr_node_ops;
 static struct nl_object_ops hnode_obj_ops;
@@ -617,11 +617,8 @@ void hnode_put(struct hsr_node *link)
 
 static struct genl_cmd genl_cmds[] = {
 	{
-		.c_id		= HSR_C_SET_NODE_LIST,
-		.c_name		= "SET_NODE_LIST",
-		.c_maxattr	= HSR_A_MAX,
-		.c_attr_policy	= hnode_policy,
-		.c_msg_parser	= hnode_msg_node_list_parser,
+		.c_id		= HSR_C_RING_ERROR,
+		.c_name		= "RING_ERROR" ,
 	},
 	{
 		.c_id		= HSR_C_NODE_DOWN,
@@ -641,6 +638,13 @@ static struct genl_cmd genl_cmds[] = {
 	{
 		.c_id		= HSR_C_GET_NODE_LIST,
 		.c_name		= "GET_NODE_LIST" ,
+	},
+	{
+		.c_id		= HSR_C_SET_NODE_LIST,
+		.c_name		= "SET_NODE_LIST",
+		.c_maxattr	= HSR_A_MAX,
+		.c_attr_policy	= hnode_policy,
+		.c_msg_parser	= hnode_msg_node_list_parser,
 	},
 };
 
