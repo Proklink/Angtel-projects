@@ -72,7 +72,7 @@ static int event_input(struct nl_msg *msg, void *arg)
 	struct nl_cache_mngr *mngr = arg;
 	int protocol = nlmsg_get_proto(msg);
 	int type = nlmsg_hdr(msg)->nlmsg_type;
-	printf("\ntype = %d\n", type);
+	
 	struct nl_cache_ops *ops;
 	int i, n;
 	struct nl_parser_param p = {
@@ -97,14 +97,14 @@ static int event_input(struct nl_msg *msg, void *arg)
 					goto found;
 		}
 	}
-	printf("\n92_cache_mngr.c\n");
+	
 	return NL_SKIP;
 
 found:
 	NL_DBG(2, "Associated message %p to cache %p\n",
 	       msg, mngr->cm_assocs[i].ca_cache);
 	p.pp_arg = &mngr->cm_assocs[i];
-	printf("\n105_cache_mngr.c\n");
+
 	return nl_cache_parse(ops, NULL, nlmsg_hdr(msg), &p);
 }
 
@@ -250,8 +250,8 @@ static int nl_cache_mngr_set_change_func_v2(struct nl_cache_mngr *mngr,
 	if (ops->co_groups == NULL)
 		return -NLE_OPNOTSUPP;
 
-	for (i = 0; i < mngr->cm_nassocs; i++)
-		if (mngr->cm_assocs[i].ca_cache == cache)
+	for (i = 0; i < mngr->cm_nassocs; i++) 
+		if (mngr->cm_assocs[i].ca_cache == cache) 
 			break;
 
 	if (i >= mngr->cm_nassocs) {
@@ -312,7 +312,7 @@ int nl_cache_mngr_add_cache(struct nl_cache_mngr *mngr, struct nl_cache *cache,
 			return -NLE_EXIST;
 
 	for (i = 0; i < mngr->cm_nassocs; i++)
-		if (!mngr->cm_assocs[i].ca_cache)
+		if (!mngr->cm_assocs[i].ca_cache) 
 			break;
 
 	if (i >= mngr->cm_nassocs) {
@@ -555,9 +555,11 @@ int nl_cache_mngr_data_ready(struct nl_cache_mngr *mngr)
 	}
 
 	nl_cb_put(cb);
-	if (err < 0 && err != -NLE_AGAIN) {printf("\n556_cache_mngr.c err = %d\n", err);
-		return err;}
-	printf("\n558_cache_mngr, err = %d\n", err);
+	if (err < 0 && err != -NLE_AGAIN) {
+		printf("\n559_cache_mngr.c err = %d\n", err);
+		return err;
+	}
+	printf("\n562_cache_mngr, err = %d\n", err);
 	return nread;
 }
 

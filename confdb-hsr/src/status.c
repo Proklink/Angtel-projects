@@ -114,19 +114,19 @@ int add_node_to_list(struct hsr_module *app, struct nl_object *n_obj) {
 	}
 
 	ret = 0;
-_error:printf("\n117_add_node_to_list  link_cache\n");
+_error://printf("\n117_add_node_to_list  link_cache\n");
 	//nl_cache_put(link_cache);
-	printf("\n119_add_node_to_list  link_cache\n");
+	//printf("\n119_add_node_to_list  link_cache\n");
 
 	nl_close(sk);
-	printf("\n122_add_node_to_list  nl_close\n");
+	//printf("\n122_add_node_to_list  nl_close\n");
 
 	return ret;
 	
 }
 
 int delete_node_from_list(struct hsr_module *app, struct nl_object *n_obj) {
-
+	printf("\n129_status.c delete_node_from_list\n");
     struct hsr_node *node = nl_object_priv(n_obj);
 
 	struct nl_cache *link_cache;
@@ -152,7 +152,6 @@ int delete_node_from_list(struct hsr_module *app, struct nl_object *n_obj) {
         DLOG_ERR("No match was found");
 		return -1;
     }
-
 
     err = cdb_edit_status(app->cdb, CDB_OP_REMOVE, jv,
 		      XPATH_ITF "[name='%s']/angtel-hsr:hsr/node_list[mac-address='%s']", 
@@ -239,9 +238,9 @@ int add_interface_nodes_to_cache(struct hsr_module *app, const char *if_name) {
 	ret = 0;
 _error:
 	nl_cache_put(link_cache);
-	printf("\n208_link_cache\n");
+	//printf("\n208_link_cache\n");
 	nl_cache_put(hnode_cache_fi);
-	printf("\n210_hnode_cache\n");
+	//printf("\n210_hnode_cache\n");
 	nl_close(gen_sk);
 	nl_close(sk);
 	return ret;

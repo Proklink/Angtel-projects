@@ -1,0 +1,54 @@
+<!--
+WARNING: THIS IS AN AUTO-GENERATED FILE. CHANGES TO IT ARE LIKELY TO BE
+OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:
+  virsh edit container10
+or other application using the libvirt API.
+-->
+
+<domain type='kvm'>
+  <name>angtel-qemu-x86-64</name>
+  <memory unit='KiB'>524288</memory>
+  <currentMemory unit='KiB'>524288</currentMemory>
+  <memoryBacking>
+    <access mode='shared'/>
+  </memoryBacking>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <features>
+    <privnet/>
+    <acpi/>
+  </features>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' accessmode='mapped'>
+      <driver type='qcow2'/>
+      <source file='/home/student/projects/applications/danil/newpart/image-full-angtelx86-64-20210225113601.rootfs.wic.qcow2'/>
+      <target dev='hda'/>
+    </disk>
+    <filesystem type='mount' accessmode='passthrough'>
+      <driver type='virtiofs'/>
+      <source dir='/home/student/projects/applications'/>
+      <target dir='projects'/>
+    </filesystem>
+    <interface type='bridge'>
+      <source bridge='br1'/>
+      <model type='virtio'/>
+    </interface>
+    <interface type='bridge'>
+      <source bridge='br2'/>
+      <model type='virtio'/>
+    </interface>
+    <serial type='pty'>
+        <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+  </devices>
+</domain>

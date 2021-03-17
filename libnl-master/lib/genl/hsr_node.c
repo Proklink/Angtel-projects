@@ -65,6 +65,31 @@ static void hnode_free_data(struct nl_object *c)
 	}
 }
 
+static uint64_t hnode_compare(struct nl_object *_a, struct nl_object *_b,
+			  uint64_t attrs, int flags)
+{
+	struct hsr_node *a = (struct hsr_node *) _a;
+	struct hsr_node *b = (struct hsr_node *) _b;
+	uint64_t diff = 0;
+
+#define HNODE_DIFF(ATTR, EXPR) ATTR_DIFF(attrs, HNODE_ATTR_##ATTR, a, b, EXPR)
+
+	diff |= HNODE_DIFF(IFINDEX,		a->hn_ifindex != b->hn_ifindex);
+	diff |= HNODE_DIFF(ADDR_A,	a->MAC_address_A != b->MAC_address_A);
+	diff |= HNODE_DIFF(ADDR_B,	a->MAC_address_B != b->MAC_address_B);
+	diff |= HNODE_DIFF(SLAVE1,	a->hn_slave1_ifindex != b->hn_slave1_ifindex);
+	diff |= HNODE_DIFF(SLAVE2,	a->hn_slave2_ifindex != b->hn_slave2_ifindex);
+	diff |= HNODE_DIFF(SLAVE1_AGE,	a->hn_slave1_age != b->hn_slave1_age);
+	diff |= HNODE_DIFF(SLAVE2_AGE,	a->hn_slave2_age != b->hn_slave2_age);
+	diff |= HNODE_DIFF(SLAVE1_SEQ,	a->hn_slave1_seq != b->hn_slave1_seq);
+	diff |= HNODE_DIFF(SLAVE2_SEQ,	a->hn_slave2_seq != b->hn_slave2_seq);
+	diff |= HNODE_DIFF(ADDR_B_IFINDEX,	a->hn_addr_B_ifindex != b->hn_addr_B_ifindex);
+
+#undef FAM_DIFF
+
+	return diff;
+}
+
 static int hnode_clone(struct nl_object *_dst, struct nl_object *_src)
 {	
 	struct hsr_node *dst = nl_object_priv(_dst);
@@ -337,9 +362,7 @@ int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 					isContinue = true;
 					break;
 				}
-
 			}
-		
 
 		if (isContinue) {
 			continue;
@@ -545,6 +568,7 @@ static int hnode_msg_node_list_parser(struct nl_cache_ops *ops, struct genl_cmd 
 		return -NLE_MISSING_ATTR;
 	struct nl_parser_param *pp = arg;
 
+
 	int maxtype = cmd->c_maxattr;
 	struct nlattr *head = nlmsg_attrdata(info->nlh, GENL_HDRSIZE(ops->co_genl->o_hdrsize));
 	int len = nlmsg_attrlen(info->nlh, GENL_HDRSIZE(ops->co_genl->o_hdrsize));  
@@ -566,7 +590,11 @@ static int hnode_msg_node_list_parser(struct nl_cache_ops *ops, struct genl_cmd 
 			if (node == NULL) 
 				return -NLE_NOMEM;
 
-			node->ce_msgtype = info->nlh->nlmsg_type;
+
+			if (cmd->c_id == HSR_C_SET_NODE_LIST)
+				node->ce_msgtype = 2;
+			else if (cmd->c_id == HSR_C_NODE_DOWN)
+				node->ce_msgtype = 1;
 
 			node->MAC_address_A = nl_addr_alloc_attr(nla, AF_UNSPEC);
 			if (node->MAC_address_A == NULL)
@@ -586,6 +614,7 @@ static int hnode_msg_node_list_parser(struct nl_cache_ops *ops, struct genl_cmd 
 
 	return 0;
 }
+
 
 static int hnode_msg_node_status_parser(struct nl_cache_ops *ops, struct genl_cmd *cmd,
 			   												struct genl_info *info, void *arg)
@@ -619,10 +648,14 @@ static struct genl_cmd genl_cmds[] = {
 	{
 		.c_id		= HSR_C_RING_ERROR,
 		.c_name		= "RING_ERROR" ,
+		.c_msg_parser	= hnode_msg_node_list_parser,
 	},
 	{
 		.c_id		= HSR_C_NODE_DOWN,
 		.c_name		= "NODE_DOWN" ,
+		.c_maxattr	= HSR_A_MAX,
+		.c_attr_policy	= hnode_policy,
+		.c_msg_parser	= hnode_msg_node_list_parser,
 	},
 	{
 		.c_id		= HSR_C_GET_NODE_STATUS,
@@ -664,6 +697,8 @@ static struct nl_object_ops hnode_obj_ops = {
 	    [NL_DUMP_DETAILS]	= hnode_dump_details,
 		[NL_DUMP_STATS]	= hnode_dump_stats,
 	},
+	.oo_compare		= hnode_compare,
+	.oo_id_attrs		= HNODE_ATTR_IFINDEX,
 };
 
 static struct nl_af_group hnode_groups[] = {
@@ -675,7 +710,12 @@ static struct nl_af_group hnode_groups[] = {
 static struct nl_cache_ops hsr_node_ops = {
 	.co_name		= "hsr_node",
 	.co_hdrsize		= GENL_HDRSIZE(0),
-	.co_msgtypes		= GENL_FAMILY(GENL_ID_HSR, "HSR"),
+	.co_msgtypes		= { 
+							{ GENL_ID_HSR, NL_ACT_UNSPEC, "hsr" },
+							{ 1, NL_ACT_DEL, "del" },
+							{ 2, NL_ACT_NEW, "new" },
+							END_OF_MSGTYPES_LIST,
+						},
 	.co_genl		= &genl_ops,
 	.co_groups		= hnode_groups,
 	.co_protocol		= NETLINK_GENERIC,

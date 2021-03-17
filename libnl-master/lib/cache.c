@@ -792,14 +792,11 @@ static int cache_include(struct nl_cache *cache, struct nl_object *obj,
 	struct nl_object *clone = NULL;
 	uint64_t diff = 0;
 
-	printf("\n795_cache_include cache.c type->mt_act = %d\n", type->mt_act);
-
 	switch (type->mt_act) {
-	case 0:
 	case NL_ACT_NEW:
-	case NL_ACT_DEL:printf("\n 799 cache.c\n");
-		old = nl_cache_search(cache, obj);printf("\n 801 cache.c %d\n", old == NULL);
-		if (old) {printf("\n 801 cache.c\n");
+	case NL_ACT_DEL:
+		old = nl_cache_search(cache, obj);printf("\n 801_cache.c (old == NULL) = %d\n", old == NULL);
+		if (old) {
 			if (cb_v2 && old->ce_ops->oo_update) {printf("\n 802 cache.c\n");
 				clone = nl_object_clone(old);
 				diff = nl_object_diff64(old, obj);
@@ -809,7 +806,7 @@ static int cache_include(struct nl_cache *cache, struct nl_object *obj,
 			 * object with the old existing cache object.
 			 * Handle them first.
 			 */
-			if (nl_object_update(old, obj) == 0) {printf("\n 811 cache.c\n");
+			if (nl_object_update(old, obj) == 0) {printf("\n 811_cache.c NL_ACT_CHANGE\n");
 				if (cb_v2) {
 					cb_v2(cache, clone, obj, diff,
 					      NL_ACT_CHANGE, data);
@@ -822,7 +819,7 @@ static int cache_include(struct nl_cache *cache, struct nl_object *obj,
 			nl_object_put(clone);
 
 			nl_cache_remove(old);
-			if (type->mt_act == NL_ACT_DEL) {printf("\n 824 cache.c\n");
+			if (type->mt_act == NL_ACT_DEL) {printf("\n 824_cache.c NL_ACT_DEL\n");
 				if (cb_v2)
 					cb_v2(cache, old, NULL, 0, NL_ACT_DEL,
 					      data);
@@ -832,15 +829,15 @@ static int cache_include(struct nl_cache *cache, struct nl_object *obj,
 			}
 		}
 
-		if (type->mt_act == NL_ACT_NEW) {printf("\n 834 cache.c\n");
+		if (type->mt_act == NL_ACT_NEW) {printf("\n 834_cache.c NL_ACT_NEW/NL_ACT_CHANGE\n");
 			nl_cache_move(cache, obj);
-			if (old == NULL) {printf("\n 836 cache.c\n");
+			if (old == NULL) {printf("\n 836_cache.c NL_ACT_NEW\n");
 				if (cb_v2) {
 					cb_v2(cache, NULL, obj, 0, NL_ACT_NEW,
 					      data);
 				} else if (cb)
 					cb(cache, obj, NL_ACT_NEW, data);
-			} else if (old) {printf("\n 842 cache.c\n");
+			} else if (old) {printf("\n 842_cache.c NL_ACT_CHANGE\n");
 				diff = 0;
 				if (cb || cb_v2)
 					diff = nl_object_diff64(old, obj);
@@ -1127,7 +1124,6 @@ struct nl_object *nl_cache_search(struct nl_cache *cache,
 			return obj;
 		}
 	}
-
 	return NULL;
 }
 

@@ -15,6 +15,9 @@ struct hsr_module {
 	struct nl_sock *sk;
 	struct nl_cache_mngr *nl_mngr;
 	int cache_mngr_fd;
+
+	int interfaces_size;
+	uint32_t *interfaces;
 	
 };
 

@@ -1,0 +1,8 @@
+ <interface type='bridge'>
+      <source bridge='br2'/>
+      <model type='virtio'/>
+    </interface>
+     <interface type='bridge'>
+      <source bridge='br3'/>
+      <model type='virtio'/>
+    </interface> 

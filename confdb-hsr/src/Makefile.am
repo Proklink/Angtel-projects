@@ -33,10 +33,10 @@ example_CFLAGS = \
 	$(common_cflags) \
 	$(LIBNL_CFLAGS) \
 	$(LIBNL_CLI_CFLAGS) \
-	-I /home/root/applications/danil/newpart/libnl-build/usr/local/include/libnl3 \
+	-I /home/root/projects/danil/newpart/libnl-build/usr/local/include/libnl3 \
 	$(NULL)
 
-example_LDFLAGS = -L/home/root/applications/danil/newpart/libnl-build/usr/local/lib    
+example_LDFLAGS = -L/home/root/projects/danil/newpart/libnl-build/usr/local/lib    
 
 AM_CPPFLAGS = \
 	-DLIBDIR=\"$(libdir)\" \

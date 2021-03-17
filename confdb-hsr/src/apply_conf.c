@@ -145,7 +145,7 @@ int delete_hsr_interface(const char *if_name) {
 
 int change_analysis(struct hsr_module *app, const char *if_name, 
 								const char *slave_1_name, const char *slave_2_name) {
-
+	printf("\n148_change_analysis\n");
 	struct rtnl_link *hsr_link;
 	struct nl_cache *link_cache;
 	struct nl_sock *sk;
@@ -169,7 +169,7 @@ int change_analysis(struct hsr_module *app, const char *if_name,
 
 	if ((slave_1_link == NULL) || (slave_2_link == NULL))
 		goto _error;
-	printf("\n170_change_analysis rtnl_link_get_by_name %s\n", if_name);
+	
 
 	hsr_link = rtnl_link_get_by_name(link_cache, if_name);
 	
@@ -196,7 +196,7 @@ int change_analysis(struct hsr_module *app, const char *if_name,
 _error:
 	//printf("\n197_change_analysis  nl_cache_put\n");
 	//nl_cache_put(link_cache);
-	printf("\n199_change_analysis  nl_cache_put\n");
+	//printf("\n199_change_analysis  nl_cache_put\n");
 	nl_close(sk);
 	return ret;
 

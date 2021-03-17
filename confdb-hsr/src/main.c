@@ -39,7 +39,7 @@ static void hnode_cache_change_cb(struct nl_cache *cache,
 	if (nl_act == NL_ACT_NEW) {
 		add_node_to_list(app, n_obj);
 	} else if (nl_act == NL_ACT_DEL)
-		delete_node_from_list(app, n_obj);
+		delete_node_from_list(app, o_obj);
 
 	
 }
@@ -113,7 +113,6 @@ static void opt_free(void)
 
 static int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 {
-	/* Получение приватных данных модуля hsr программы configd. */
 	
 	struct hsr_module *app = data;
 	const char *interface_name;
@@ -255,8 +254,8 @@ static struct hsr_module *app_create(void)
 	}
 
 	DLOG_INFO("Adding 'hsr_node' cache to cache manager");
-
-	ret = hnode_alloc_cache(app->sk, &hnode_cache);
+//app->sk
+	ret = hnode_alloc_cache(NULL, &hnode_cache);
 	if (ret < 0) {
 		DLOG_ERR("Failed to allocate 'hsr_node' cache: %s",
 		     nl_geterror(ret));
@@ -359,7 +358,7 @@ int main(int argc, char *argv[])
 		if (FD_ISSET(app->cache_mngr_fd, &fds)) {
 			printf("\nFD_ISSET\n");
 			ret = nl_cache_mngr_data_ready(app->nl_mngr);
-			printf("\n%d\n", ret);
+			printf("\nnl_cache_mngr_data_ready ret = %d\n", ret);
 			if (ret < 0) {
 				DLOG_ERR("Failed to process NL messages: %s",
 					 nl_geterror(ret));
