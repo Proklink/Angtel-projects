@@ -28,7 +28,7 @@ or other application using the libvirt API.
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' accessmode='mapped'>
       <driver type='qcow2'/>
-      <source file='/home/student/projects/applications/danil/newpart/image-full-angtelx86-64-20210225113601.rootfs.wic.qcow2'/>
+      <source file='/home/student/projects/applications/danil/newpart/image-full-angtelx86-64-wb.rootfs.wic.qcow2'/>
       <target dev='hda'/>
     </disk>
     <filesystem type='mount' accessmode='passthrough'>
@@ -42,6 +42,14 @@ or other application using the libvirt API.
     </interface>
     <interface type='bridge'>
       <source bridge='br2'/>
+      <model type='virtio'/>
+    </interface>
+    <interface type='bridge'>
+      <source bridge='br3'/>
+      <model type='virtio'/>
+    </interface>
+    <interface type='bridge'>
+      <source bridge='br4'/>
       <model type='virtio'/>
     </interface>
     <serial type='pty'>

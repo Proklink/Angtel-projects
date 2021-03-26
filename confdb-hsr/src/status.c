@@ -237,7 +237,7 @@ int add_interface_nodes_to_cache(struct hsr_module *app, const char *if_name) {
 	
 	ret = 0;
 _error:
-	nl_cache_put(link_cache);
+	//nl_cache_put(link_cache);
 	//printf("\n208_link_cache\n");
 	nl_cache_put(hnode_cache_fi);
 	//printf("\n210_hnode_cache\n");

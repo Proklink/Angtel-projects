@@ -75,8 +75,8 @@ static uint64_t hnode_compare(struct nl_object *_a, struct nl_object *_b,
 #define HNODE_DIFF(ATTR, EXPR) ATTR_DIFF(attrs, HNODE_ATTR_##ATTR, a, b, EXPR)
 
 	diff |= HNODE_DIFF(IFINDEX,		a->hn_ifindex != b->hn_ifindex);
-	diff |= HNODE_DIFF(ADDR_A,	a->MAC_address_A != b->MAC_address_A);
-	diff |= HNODE_DIFF(ADDR_B,	a->MAC_address_B != b->MAC_address_B);
+	diff |= HNODE_DIFF(ADDR_A,	nl_addr_cmp(a->MAC_address_A, b->MAC_address_A));
+	diff |= HNODE_DIFF(ADDR_B,	nl_addr_cmp(a->MAC_address_B, b->MAC_address_B));
 	diff |= HNODE_DIFF(SLAVE1,	a->hn_slave1_ifindex != b->hn_slave1_ifindex);
 	diff |= HNODE_DIFF(SLAVE2,	a->hn_slave2_ifindex != b->hn_slave2_ifindex);
 	diff |= HNODE_DIFF(SLAVE1_AGE,	a->hn_slave1_age != b->hn_slave1_age);
@@ -355,27 +355,32 @@ int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 			continue;
 		
 		bool isContinue = false;
+		uint32_t ifindex = rtnl_link_get_ifindex(link);
 
 		if (added_interfaces != NULL)
-			for (int i = 0; i < size; i++) {
-				if (rtnl_link_get_ifindex(link) == added_interfaces[i]) {
+			for (int i = 0; i < size; i++) 
+				if (ifindex == added_interfaces[i]) {
 					isContinue = true;
 					break;
 				}
-			}
+			
 
 		if (isContinue) {
 			continue;
 		
 		} else {
 
-			add_interface_ifindex = rtnl_link_get_ifindex(link);
+			add_interface_ifindex = ifindex;
 			printf("\n350_add_interface_ifindex = %d\n", add_interface_ifindex);
 			struct nl_cache *temp_result = NULL;
 
 			ret = nl_cache_alloc_and_fill(&hsr_node_ops, sk, &temp_result);
 			if (ret < 0)
 				goto _error;
+				
+			printf("\nwaiting for ack\n");
+			int err = nl_cache_pickup(sk, temp_result);
+			printf("\nack is derrived\n");
 
 			if (temp_result == NULL)
 				goto _error;
@@ -420,7 +425,7 @@ int hnode_alloc_cache_for_interface(struct nl_sock *sk, struct nl_cache **result
 	if (ifindex < 1)
 		return -1;
 
-	add_interface_ifindex = ifindex; //need check for exists interface with that ifindex
+	add_interface_ifindex = ifindex; 
 
 	int ret = nl_cache_alloc_and_fill(&hsr_node_ops, sk, result);
 	if (ret < 0)
@@ -577,6 +582,16 @@ static int hnode_msg_node_list_parser(struct nl_cache_ops *ops, struct genl_cmd 
 	int rem, err;
 
 	uint32_t ifindex = nla_get_u32(info->attrs[HSR_A_IFINDEX]);
+
+struct nl_dump_params dp = {
+		.dp_type = NL_DUMP_DETAILS ,
+		.dp_fd = stdout,
+	};
+	printf("\nnodes cache:\n");
+	struct nl_cache_assoc *ca = pp->pp_arg;
+	struct nl_cache *cache_nodes = ca->ca_cache;
+	nl_cache_dump(cache_nodes, &dp);
+	printf("\nend cache\n");
 	
 	nla_for_each_attr(nla, head, len, rem) {
 		int type = nla_type(nla);
@@ -698,7 +713,9 @@ static struct nl_object_ops hnode_obj_ops = {
 		[NL_DUMP_STATS]	= hnode_dump_stats,
 	},
 	.oo_compare		= hnode_compare,
-	.oo_id_attrs		= HNODE_ATTR_IFINDEX,
+	.oo_id_attrs		= (	HNODE_ATTR_IFINDEX 	| 
+							HNODE_ATTR_ADDR_A 	| 
+							HNODE_ATTR_ADDR_B	),
 };
 
 static struct nl_af_group hnode_groups[] = {

@@ -36,10 +36,19 @@ static void hnode_cache_change_cb(struct nl_cache *cache,
 
 	struct hsr_module *app = data;
 
-	if (nl_act == NL_ACT_NEW) {
-		add_node_to_list(app, n_obj);
-	} else if (nl_act == NL_ACT_DEL)
-		delete_node_from_list(app, o_obj);
+	printf("\napp->interfaces_size = %d\n", app->interfaces_size);
+	if (app->interfaces_size > 0) {
+	
+
+		if (nl_act == NL_ACT_NEW) {
+			add_node_to_list(app, n_obj);
+		} else if (nl_act == NL_ACT_DEL)
+			delete_node_from_list(app, o_obj);
+		else if (nl_act == NL_ACT_CHANGE){
+			struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
+			nl_cache_add(mngr_hnode_cache, o_obj);
+		}
+	}
 
 	
 }
@@ -135,6 +144,11 @@ static int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 		/* Данные добавлены или изменены. */
 		printf("Data added or changed: %s\n", interface_name);
 
+		ret = change_interface_list(app, interface_name, 1);
+		if (ret < 0) {
+			DLOG_ERR("Failed to change interface list");
+		}
+
 		/* Извлечение добавленных или измененных данных. */
 		ret = json_unpack_ex(cdb_data, &json_error, 0,
 				     "{s:s, s:s}",
@@ -162,10 +176,20 @@ static int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 
 		delete_hsr_interface(interface_name);
 
-		struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
+		ret = change_interface_list(app, interface_name, 0);
+		if (ret < 0) {
+			DLOG_ERR("Failed to change interface list");
+		}
 
-		nl_cache_clear(mngr_hnode_cache);
+		
+		// struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
+
+		// nl_cache_clear(mngr_hnode_cache);
 	}
+
+	 for (int i = 0; i < app->interfaces_size; i++) 
+            printf("\napp->interfaces[%d] = %d\n", i, app->interfaces[i]);
+    
 
 	return 0;
 }
@@ -192,11 +216,17 @@ static void app_destroy(struct hsr_module *app)
 {
 	if (!app)
 		return;
+
+	struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
+
+	nl_cache_clear(mngr_hnode_cache);
 		
 	if (app->nl_mngr)
 		nl_cache_mngr_free(app->nl_mngr);
 
 	nl_socket_free(app->sk);
+
+	free(app->interfaces);
 
 	cdb_remove_extension(app->cdb, "hsr-app");
 	cdb_wait_for_responses(app->cdb);
@@ -219,6 +249,9 @@ static struct hsr_module *app_create(void)
 		DLOG_ERR("Failed to create CDB client");
 		goto on_error;
 	}
+
+	app->interfaces = NULL;
+	app->interfaces_size = 0;
 
 	ret = cdb_add_extension(app->cdb, "hsr-app", NULL, notifiers, app);
 	if (ret < 0) {
@@ -255,12 +288,20 @@ static struct hsr_module *app_create(void)
 
 	DLOG_INFO("Adding 'hsr_node' cache to cache manager");
 //app->sk
-	ret = hnode_alloc_cache(NULL, &hnode_cache);
+	ret = hnode_alloc_cache(app->sk, &hnode_cache);
 	if (ret < 0) {
 		DLOG_ERR("Failed to allocate 'hsr_node' cache: %s",
 		     nl_geterror(ret));
 		goto on_error;
 	}
+
+	// struct nl_dump_params dp = {
+	// 	.dp_type = NL_DUMP_DETAILS ,
+	// 	.dp_fd = stdout,
+	// };
+	// printf("\nnodes cache after start:\n");
+	// nl_cache_dump(hnode_cache, &dp);
+	// printf("\nend cache\n");
 
 	printf("\nAsd1\n");
 

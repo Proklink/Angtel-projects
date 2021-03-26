@@ -328,9 +328,9 @@ hsr_nodes_LDADD = $(LIBNL_LIBS) \
 
 hsr_nodes_CFLAGS = $(LIBNL_CFLAGS) \
                          $(LIBNL_CLI_CFLAGS) \
-                         -I /home/root/applications/danil/newpart/libnl-build/include/libnl3
+                         -I /home/root/projects/danil/newpart/libnl-build/include/libnl3
 
-hsr_nodes_LDFLAGS = -L/home/root/applications/danil/newpart/libnl-build/lib                         
+hsr_nodes_LDFLAGS = -L/home/root/projects/danil/newpart/libnl-build/lib                         
 AM_CFLAGS = -Wall
 all: all-am
 

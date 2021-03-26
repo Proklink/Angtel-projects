@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-pc-linux-musl
 host_triplet = x86_64-pc-linux-musl
-bin_PROGRAMS = example$(EXEEXT)
+bin_PROGRAMS = cdbhsr$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
@@ -103,22 +103,22 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_example_OBJECTS = example-main.$(OBJEXT) example-log.$(OBJEXT) \
-	example-utils.$(OBJEXT) example-apply_conf.$(OBJEXT) \
-	example-status.$(OBJEXT)
-example_OBJECTS = $(am_example_OBJECTS)
+am_cdbhsr_OBJECTS = cdbhsr-main.$(OBJEXT) cdbhsr-log.$(OBJEXT) \
+	cdbhsr-utils.$(OBJEXT) cdbhsr-apply_conf.$(OBJEXT) \
+	cdbhsr-status.$(OBJEXT) cdbhsr-hsr_module.$(OBJEXT)
+cdbhsr_OBJECTS = $(am_cdbhsr_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-example_DEPENDENCIES = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1) \
+cdbhsr_DEPENDENCIES = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-example_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(example_CFLAGS) \
-	$(CFLAGS) $(example_LDFLAGS) $(LDFLAGS) -o $@
+cdbhsr_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(cdbhsr_CFLAGS) $(CFLAGS) \
+	$(cdbhsr_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -134,9 +134,10 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/example-apply_conf.Po \
-	./$(DEPDIR)/example-log.Po ./$(DEPDIR)/example-main.Po \
-	./$(DEPDIR)/example-status.Po ./$(DEPDIR)/example-utils.Po
+am__depfiles_remade = ./$(DEPDIR)/cdbhsr-apply_conf.Po \
+	./$(DEPDIR)/cdbhsr-hsr_module.Po ./$(DEPDIR)/cdbhsr-log.Po \
+	./$(DEPDIR)/cdbhsr-main.Po ./$(DEPDIR)/cdbhsr-status.Po \
+	./$(DEPDIR)/cdbhsr-utils.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -156,8 +157,8 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(example_SOURCES)
-DIST_SOURCES = $(example_SOURCES)
+SOURCES = $(cdbhsr_SOURCES)
+DIST_SOURCES = $(cdbhsr_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -340,28 +341,29 @@ common_cflags = \
 	$(LIBEVENT_CFLAGS) \
 	$(NULL)
 
-example_SOURCES = \
+cdbhsr_SOURCES = \
 	main.c \
 	log.c \
 	utils.c \
 	apply_conf.c \
 	status.c \
+	hsr_module.c \
 	$(NULL)
 
-example_LDADD = \
+cdbhsr_LDADD = \
 	$(common_libs) \
 	$(LIBNL_LIBS) \
 	$(LIBNL_CLI_LIBS) \
 	$(NULL)
 
-example_CFLAGS = \
+cdbhsr_CFLAGS = \
 	$(common_cflags) \
 	$(LIBNL_CFLAGS) \
 	$(LIBNL_CLI_CFLAGS) \
 	-I /home/root/projects/danil/newpart/libnl-build/usr/local/include/libnl3 \
 	$(NULL)
 
-example_LDFLAGS = -L/home/root/projects/danil/newpart/libnl-build/usr/local/lib    
+cdbhsr_LDFLAGS = -L/home/root/projects/danil/newpart/libnl-build/usr/local/lib    
 AM_CPPFLAGS = \
 	-DLIBDIR=\"$(libdir)\" \
 	-DDATADIR=\"$(datadir)\" \
@@ -453,9 +455,9 @@ clean-binPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
-example$(EXEEXT): $(example_OBJECTS) $(example_DEPENDENCIES) $(EXTRA_example_DEPENDENCIES) 
-	@rm -f example$(EXEEXT)
-	$(AM_V_CCLD)$(example_LINK) $(example_OBJECTS) $(example_LDADD) $(LIBS)
+cdbhsr$(EXEEXT): $(cdbhsr_OBJECTS) $(cdbhsr_DEPENDENCIES) $(EXTRA_cdbhsr_DEPENDENCIES) 
+	@rm -f cdbhsr$(EXEEXT)
+	$(AM_V_CCLD)$(cdbhsr_LINK) $(cdbhsr_OBJECTS) $(cdbhsr_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -463,11 +465,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/example-apply_conf.Po # am--include-marker
-include ./$(DEPDIR)/example-log.Po # am--include-marker
-include ./$(DEPDIR)/example-main.Po # am--include-marker
-include ./$(DEPDIR)/example-status.Po # am--include-marker
-include ./$(DEPDIR)/example-utils.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-apply_conf.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-hsr_module.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-log.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-main.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-status.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-utils.Po # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -496,75 +499,89 @@ am--depfiles: $(am__depfiles_remade)
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(LTCOMPILE) -c -o $@ $<
 
-example-main.o: main.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-main.o -MD -MP -MF $(DEPDIR)/example-main.Tpo -c -o example-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-main.Tpo $(DEPDIR)/example-main.Po
-#	$(AM_V_CC)source='main.c' object='example-main.o' libtool=no \
+cdbhsr-main.o: main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-main.o -MD -MP -MF $(DEPDIR)/cdbhsr-main.Tpo -c -o cdbhsr-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-main.Tpo $(DEPDIR)/cdbhsr-main.Po
+#	$(AM_V_CC)source='main.c' object='cdbhsr-main.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 
-example-main.obj: main.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-main.obj -MD -MP -MF $(DEPDIR)/example-main.Tpo -c -o example-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-main.Tpo $(DEPDIR)/example-main.Po
-#	$(AM_V_CC)source='main.c' object='example-main.obj' libtool=no \
+cdbhsr-main.obj: main.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-main.obj -MD -MP -MF $(DEPDIR)/cdbhsr-main.Tpo -c -o cdbhsr-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-main.Tpo $(DEPDIR)/cdbhsr-main.Po
+#	$(AM_V_CC)source='main.c' object='cdbhsr-main.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 
-example-log.o: log.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-log.o -MD -MP -MF $(DEPDIR)/example-log.Tpo -c -o example-log.o `test -f 'log.c' || echo '$(srcdir)/'`log.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-log.Tpo $(DEPDIR)/example-log.Po
-#	$(AM_V_CC)source='log.c' object='example-log.o' libtool=no \
+cdbhsr-log.o: log.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-log.o -MD -MP -MF $(DEPDIR)/cdbhsr-log.Tpo -c -o cdbhsr-log.o `test -f 'log.c' || echo '$(srcdir)/'`log.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-log.Tpo $(DEPDIR)/cdbhsr-log.Po
+#	$(AM_V_CC)source='log.c' object='cdbhsr-log.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-log.o `test -f 'log.c' || echo '$(srcdir)/'`log.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-log.o `test -f 'log.c' || echo '$(srcdir)/'`log.c
 
-example-log.obj: log.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-log.obj -MD -MP -MF $(DEPDIR)/example-log.Tpo -c -o example-log.obj `if test -f 'log.c'; then $(CYGPATH_W) 'log.c'; else $(CYGPATH_W) '$(srcdir)/log.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-log.Tpo $(DEPDIR)/example-log.Po
-#	$(AM_V_CC)source='log.c' object='example-log.obj' libtool=no \
+cdbhsr-log.obj: log.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-log.obj -MD -MP -MF $(DEPDIR)/cdbhsr-log.Tpo -c -o cdbhsr-log.obj `if test -f 'log.c'; then $(CYGPATH_W) 'log.c'; else $(CYGPATH_W) '$(srcdir)/log.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-log.Tpo $(DEPDIR)/cdbhsr-log.Po
+#	$(AM_V_CC)source='log.c' object='cdbhsr-log.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-log.obj `if test -f 'log.c'; then $(CYGPATH_W) 'log.c'; else $(CYGPATH_W) '$(srcdir)/log.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-log.obj `if test -f 'log.c'; then $(CYGPATH_W) 'log.c'; else $(CYGPATH_W) '$(srcdir)/log.c'; fi`
 
-example-utils.o: utils.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-utils.o -MD -MP -MF $(DEPDIR)/example-utils.Tpo -c -o example-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-utils.Tpo $(DEPDIR)/example-utils.Po
-#	$(AM_V_CC)source='utils.c' object='example-utils.o' libtool=no \
+cdbhsr-utils.o: utils.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-utils.o -MD -MP -MF $(DEPDIR)/cdbhsr-utils.Tpo -c -o cdbhsr-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-utils.Tpo $(DEPDIR)/cdbhsr-utils.Po
+#	$(AM_V_CC)source='utils.c' object='cdbhsr-utils.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
-example-utils.obj: utils.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-utils.obj -MD -MP -MF $(DEPDIR)/example-utils.Tpo -c -o example-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-utils.Tpo $(DEPDIR)/example-utils.Po
-#	$(AM_V_CC)source='utils.c' object='example-utils.obj' libtool=no \
+cdbhsr-utils.obj: utils.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-utils.obj -MD -MP -MF $(DEPDIR)/cdbhsr-utils.Tpo -c -o cdbhsr-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-utils.Tpo $(DEPDIR)/cdbhsr-utils.Po
+#	$(AM_V_CC)source='utils.c' object='cdbhsr-utils.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
 
-example-apply_conf.o: apply_conf.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-apply_conf.o -MD -MP -MF $(DEPDIR)/example-apply_conf.Tpo -c -o example-apply_conf.o `test -f 'apply_conf.c' || echo '$(srcdir)/'`apply_conf.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-apply_conf.Tpo $(DEPDIR)/example-apply_conf.Po
-#	$(AM_V_CC)source='apply_conf.c' object='example-apply_conf.o' libtool=no \
+cdbhsr-apply_conf.o: apply_conf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-apply_conf.o -MD -MP -MF $(DEPDIR)/cdbhsr-apply_conf.Tpo -c -o cdbhsr-apply_conf.o `test -f 'apply_conf.c' || echo '$(srcdir)/'`apply_conf.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-apply_conf.Tpo $(DEPDIR)/cdbhsr-apply_conf.Po
+#	$(AM_V_CC)source='apply_conf.c' object='cdbhsr-apply_conf.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-apply_conf.o `test -f 'apply_conf.c' || echo '$(srcdir)/'`apply_conf.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-apply_conf.o `test -f 'apply_conf.c' || echo '$(srcdir)/'`apply_conf.c
 
-example-apply_conf.obj: apply_conf.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-apply_conf.obj -MD -MP -MF $(DEPDIR)/example-apply_conf.Tpo -c -o example-apply_conf.obj `if test -f 'apply_conf.c'; then $(CYGPATH_W) 'apply_conf.c'; else $(CYGPATH_W) '$(srcdir)/apply_conf.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-apply_conf.Tpo $(DEPDIR)/example-apply_conf.Po
-#	$(AM_V_CC)source='apply_conf.c' object='example-apply_conf.obj' libtool=no \
+cdbhsr-apply_conf.obj: apply_conf.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-apply_conf.obj -MD -MP -MF $(DEPDIR)/cdbhsr-apply_conf.Tpo -c -o cdbhsr-apply_conf.obj `if test -f 'apply_conf.c'; then $(CYGPATH_W) 'apply_conf.c'; else $(CYGPATH_W) '$(srcdir)/apply_conf.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-apply_conf.Tpo $(DEPDIR)/cdbhsr-apply_conf.Po
+#	$(AM_V_CC)source='apply_conf.c' object='cdbhsr-apply_conf.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-apply_conf.obj `if test -f 'apply_conf.c'; then $(CYGPATH_W) 'apply_conf.c'; else $(CYGPATH_W) '$(srcdir)/apply_conf.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-apply_conf.obj `if test -f 'apply_conf.c'; then $(CYGPATH_W) 'apply_conf.c'; else $(CYGPATH_W) '$(srcdir)/apply_conf.c'; fi`
 
-example-status.o: status.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-status.o -MD -MP -MF $(DEPDIR)/example-status.Tpo -c -o example-status.o `test -f 'status.c' || echo '$(srcdir)/'`status.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-status.Tpo $(DEPDIR)/example-status.Po
-#	$(AM_V_CC)source='status.c' object='example-status.o' libtool=no \
+cdbhsr-status.o: status.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-status.o -MD -MP -MF $(DEPDIR)/cdbhsr-status.Tpo -c -o cdbhsr-status.o `test -f 'status.c' || echo '$(srcdir)/'`status.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-status.Tpo $(DEPDIR)/cdbhsr-status.Po
+#	$(AM_V_CC)source='status.c' object='cdbhsr-status.o' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-status.o `test -f 'status.c' || echo '$(srcdir)/'`status.c
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-status.o `test -f 'status.c' || echo '$(srcdir)/'`status.c
 
-example-status.obj: status.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -MT example-status.obj -MD -MP -MF $(DEPDIR)/example-status.Tpo -c -o example-status.obj `if test -f 'status.c'; then $(CYGPATH_W) 'status.c'; else $(CYGPATH_W) '$(srcdir)/status.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/example-status.Tpo $(DEPDIR)/example-status.Po
-#	$(AM_V_CC)source='status.c' object='example-status.obj' libtool=no \
+cdbhsr-status.obj: status.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-status.obj -MD -MP -MF $(DEPDIR)/cdbhsr-status.Tpo -c -o cdbhsr-status.obj `if test -f 'status.c'; then $(CYGPATH_W) 'status.c'; else $(CYGPATH_W) '$(srcdir)/status.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-status.Tpo $(DEPDIR)/cdbhsr-status.Po
+#	$(AM_V_CC)source='status.c' object='cdbhsr-status.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(example_CFLAGS) $(CFLAGS) -c -o example-status.obj `if test -f 'status.c'; then $(CYGPATH_W) 'status.c'; else $(CYGPATH_W) '$(srcdir)/status.c'; fi`
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-status.obj `if test -f 'status.c'; then $(CYGPATH_W) 'status.c'; else $(CYGPATH_W) '$(srcdir)/status.c'; fi`
+
+cdbhsr-hsr_module.o: hsr_module.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-hsr_module.o -MD -MP -MF $(DEPDIR)/cdbhsr-hsr_module.Tpo -c -o cdbhsr-hsr_module.o `test -f 'hsr_module.c' || echo '$(srcdir)/'`hsr_module.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-hsr_module.Tpo $(DEPDIR)/cdbhsr-hsr_module.Po
+#	$(AM_V_CC)source='hsr_module.c' object='cdbhsr-hsr_module.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-hsr_module.o `test -f 'hsr_module.c' || echo '$(srcdir)/'`hsr_module.c
+
+cdbhsr-hsr_module.obj: hsr_module.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-hsr_module.obj -MD -MP -MF $(DEPDIR)/cdbhsr-hsr_module.Tpo -c -o cdbhsr-hsr_module.obj `if test -f 'hsr_module.c'; then $(CYGPATH_W) 'hsr_module.c'; else $(CYGPATH_W) '$(srcdir)/hsr_module.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-hsr_module.Tpo $(DEPDIR)/cdbhsr-hsr_module.Po
+#	$(AM_V_CC)source='hsr_module.c' object='cdbhsr-hsr_module.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-hsr_module.obj `if test -f 'hsr_module.c'; then $(CYGPATH_W) 'hsr_module.c'; else $(CYGPATH_W) '$(srcdir)/hsr_module.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -699,11 +716,12 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/example-apply_conf.Po
-	-rm -f ./$(DEPDIR)/example-log.Po
-	-rm -f ./$(DEPDIR)/example-main.Po
-	-rm -f ./$(DEPDIR)/example-status.Po
-	-rm -f ./$(DEPDIR)/example-utils.Po
+		-rm -f ./$(DEPDIR)/cdbhsr-apply_conf.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-hsr_module.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-log.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-main.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-status.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-utils.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -749,11 +767,12 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/example-apply_conf.Po
-	-rm -f ./$(DEPDIR)/example-log.Po
-	-rm -f ./$(DEPDIR)/example-main.Po
-	-rm -f ./$(DEPDIR)/example-status.Po
-	-rm -f ./$(DEPDIR)/example-utils.Po
+		-rm -f ./$(DEPDIR)/cdbhsr-apply_conf.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-hsr_module.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-log.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-main.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-status.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-utils.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

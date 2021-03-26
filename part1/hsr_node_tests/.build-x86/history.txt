@@ -1,0 +1,6 @@
+merge /ietf-interfaces:interfaces/interface {"ietf-interfaces:interface":[{"name":"hsr0","type":"angtel-interfaces:hsr","angtel-hsr:hsr":{"slave-a":"eth0","slave-b":"eth1"}}]}
+get /ietf-interfaces:interfaces/interface
+merge /ietf-interfaces:interfaces/interface {"ietf-interfaces:interface":[{"name":"hsr1","type":"angtel-interfaces:hsr","angtel-hsr:hsr":{"slave-a":"eth3","slave-b":"eth2"}}]}
+get /ietf-interfaces:interfaces/interface
+remove /ietf-interfaces:interfaces/interface[name="hsr0"]
+remove /ietf-interfaces:interfaces/interface[name="hsr1"]

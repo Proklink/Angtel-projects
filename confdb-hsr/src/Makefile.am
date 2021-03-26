@@ -1,6 +1,6 @@
 
 bin_PROGRAMS = \
-	example
+	cdbhsr
 
 common_libs = \
 	$(CONFDB_LIBS) \
@@ -17,26 +17,27 @@ common_cflags = \
 	$(LIBEVENT_CFLAGS) \
 	$(NULL)
 
-example_SOURCES = \
+cdbhsr_SOURCES = \
 	main.c \
 	log.c \
 	utils.c \
 	apply_conf.c \
 	status.c \
+	hsr_module.c \
 	$(NULL)
-example_LDADD = \
+cdbhsr_LDADD = \
 	$(common_libs) \
 	$(LIBNL_LIBS) \
 	$(LIBNL_CLI_LIBS) \
 	$(NULL)
-example_CFLAGS = \
+cdbhsr_CFLAGS = \
 	$(common_cflags) \
 	$(LIBNL_CFLAGS) \
 	$(LIBNL_CLI_CFLAGS) \
 	-I /home/root/projects/danil/newpart/libnl-build/usr/local/include/libnl3 \
 	$(NULL)
 
-example_LDFLAGS = -L/home/root/projects/danil/newpart/libnl-build/usr/local/lib    
+cdbhsr_LDFLAGS = -L/home/root/projects/danil/newpart/libnl-build/usr/local/lib    
 
 AM_CPPFLAGS = \
 	-DLIBDIR=\"$(libdir)\" \

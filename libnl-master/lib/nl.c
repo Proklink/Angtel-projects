@@ -841,8 +841,8 @@ continue_reading:
 	else
 		n = nl_recv(sk, &nla, &buf, &creds);
 
-	if (n <= 0) {printf("\n844_nl.c\n");
-		return n;}
+	if (n <= 0) 
+		return n;
 	
 	NL_DBG(3, "recvmsgs(%p): Read %d bytes\n", sk, n);
 
@@ -892,7 +892,7 @@ continue_reading:
 		if (hdr->nlmsg_type == NLMSG_DONE ||
 		    hdr->nlmsg_type == NLMSG_ERROR ||
 		    hdr->nlmsg_type == NLMSG_NOOP ||
-		    hdr->nlmsg_type == NLMSG_OVERRUN) {
+		    hdr->nlmsg_type == NLMSG_OVERRUN) {printf("\n895_nl.c sk->s_seq_expect++;\n");
 			/* We can't check for !NLM_F_MULTI since some netlink
 			 * users in the kernel are broken. */
 			sk->s_seq_expect++;

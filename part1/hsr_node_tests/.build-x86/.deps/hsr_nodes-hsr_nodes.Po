@@ -1,14 +1,14 @@
 hsr_nodes-hsr_nodes.o: ../hsr_nodes.c /usr/include/stdc-predef.h \
  /usr/include/stdio.h /usr/include/features.h \
  /usr/include/bits/alltypes.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/netlink.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/netlink.h \
  /usr/include/stdint.h /usr/include/bits/stdint.h /usr/include/string.h \
  /usr/include/strings.h /usr/include/stdlib.h /usr/include/alloca.h \
  /usr/include/poll.h /usr/include/bits/poll.h /usr/include/sys/socket.h \
  /usr/include/bits/socket.h /usr/include/sys/types.h \
  /usr/include/endian.h /usr/include/sys/select.h /usr/include/sys/time.h \
  /usr/include/netdb.h /usr/include/netinet/in.h /usr/include/inttypes.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/netlink-compat.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/netlink-compat.h \
  /usr/include/linux/netlink.h /usr/include/linux/kernel.h \
  /usr/include/linux/socket.h /usr/include/linux/types.h \
  /usr/include/asm/types.h /usr/include/asm-generic/types.h \
@@ -21,27 +21,27 @@ hsr_nodes-hsr_nodes.o: ../hsr_nodes.c /usr/include/stdc-predef.h \
  /usr/include/linux/genetlink.h /usr/include/linux/netfilter/nfnetlink.h \
  /usr/include/linux/netfilter/nfnetlink_compat.h \
  /usr/include/netinet/tcp.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/version.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/errno.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/types.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/handlers.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/netlink-kernel.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/socket.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/object.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/utils.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/list.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/version.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/errno.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/types.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/handlers.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/netlink-kernel.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/socket.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/object.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/utils.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/list.h \
  /usr/include/stddef.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/route/link.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/cache.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/msg.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/attr.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/addr.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/data.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/route/link.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/cache.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/msg.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/attr.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/addr.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/data.h \
  /usr/include/stdbool.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/route/link/hsr.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/genl/hsr_node.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/route/link/hsr.h \
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/genl/hsr_node.h \
  /usr/include/linux/hsr_netlink.h \
- /home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/route/rtnl.h
+ /home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/route/rtnl.h
 
 /usr/include/stdc-predef.h:
 
@@ -51,7 +51,7 @@ hsr_nodes-hsr_nodes.o: ../hsr_nodes.c /usr/include/stdc-predef.h \
 
 /usr/include/bits/alltypes.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/netlink.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/netlink.h:
 
 /usr/include/stdint.h:
 
@@ -87,7 +87,7 @@ hsr_nodes-hsr_nodes.o: ../hsr_nodes.c /usr/include/stdc-predef.h \
 
 /usr/include/inttypes.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/netlink-compat.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/netlink-compat.h:
 
 /usr/include/linux/netlink.h:
 
@@ -133,44 +133,44 @@ hsr_nodes-hsr_nodes.o: ../hsr_nodes.c /usr/include/stdc-predef.h \
 
 /usr/include/netinet/tcp.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/version.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/version.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/errno.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/errno.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/types.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/types.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/handlers.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/handlers.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/netlink-kernel.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/netlink-kernel.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/socket.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/socket.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/object.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/object.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/utils.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/utils.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/list.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/list.h:
 
 /usr/include/stddef.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/route/link.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/route/link.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/cache.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/cache.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/msg.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/msg.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/attr.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/attr.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/addr.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/addr.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/data.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/data.h:
 
 /usr/include/stdbool.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/route/link/hsr.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/route/link/hsr.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/genl/hsr_node.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/genl/hsr_node.h:
 
 /usr/include/linux/hsr_netlink.h:
 
-/home/root/applications/danil/newpart/libnl-build/include/libnl3/netlink/route/rtnl.h:
+/home/root/projects/danil/newpart/libnl-build/include/libnl3/netlink/route/rtnl.h:

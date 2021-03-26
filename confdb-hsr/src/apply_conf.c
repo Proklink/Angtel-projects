@@ -174,7 +174,6 @@ int change_analysis(struct hsr_module *app, const char *if_name,
 	hsr_link = rtnl_link_get_by_name(link_cache, if_name);
 	
 	if (hsr_link == NULL) {
-	//printf("\n176_create_hsr_interface \n");
 		ret = create_hsr_interface(if_name, rtnl_link_get_ifindex(slave_1_link), 
 												rtnl_link_get_ifindex(slave_2_link), 1);
 		if (ret < 0) {

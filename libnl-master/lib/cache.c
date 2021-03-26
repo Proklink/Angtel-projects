@@ -819,6 +819,14 @@ static int cache_include(struct nl_cache *cache, struct nl_object *obj,
 			nl_object_put(clone);
 
 			nl_cache_remove(old);
+			struct nl_dump_params dp = {
+			.dp_type = NL_DUMP_DETAILS ,
+			.dp_fd = stdout,
+			};
+			printf("\nnodes cache in cache.c:\n");
+		
+			nl_cache_dump(cache, &dp);
+			printf("\nend cache\n");
 			if (type->mt_act == NL_ACT_DEL) {printf("\n 824_cache.c NL_ACT_DEL\n");
 				if (cb_v2)
 					cb_v2(cache, old, NULL, 0, NL_ACT_DEL,
@@ -1121,6 +1129,8 @@ struct nl_object *nl_cache_search(struct nl_cache *cache,
 	nl_list_for_each_entry(obj, &cache->c_items, ce_list) {
 		if (nl_object_identical(obj, needle)) {
 			nl_object_get(obj);
+			printf("\n1125_cache.c_ found obj:\n");
+			nl_object_dump(obj, &nl_debug_dp);
 			return obj;
 		}
 	}

@@ -103,6 +103,7 @@ static int event_input(struct nl_msg *msg, void *arg)
 found:
 	NL_DBG(2, "Associated message %p to cache %p\n",
 	       msg, mngr->cm_assocs[i].ca_cache);
+	
 	p.pp_arg = &mngr->cm_assocs[i];
 
 	return nl_cache_parse(ops, NULL, nlmsg_hdr(msg), &p);
