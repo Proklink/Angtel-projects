@@ -38,12 +38,13 @@ static void hnode_cache_change_cb(struct nl_cache *cache,
 
 	printf("\napp->interfaces_size = %d\n", app->interfaces_size);
 	if (app->interfaces_size > 0) {
-	
 
 		if (nl_act == NL_ACT_NEW) {
 			add_node_to_list(app, n_obj);
+			
 		} else if (nl_act == NL_ACT_DEL)
 			delete_node_from_list(app, o_obj);
+
 		else if (nl_act == NL_ACT_CHANGE){
 			struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
 			nl_cache_add(mngr_hnode_cache, o_obj);
@@ -181,14 +182,7 @@ static int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data)
 			DLOG_ERR("Failed to change interface list");
 		}
 
-		
-		// struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
-
-		// nl_cache_clear(mngr_hnode_cache);
 	}
-
-	 for (int i = 0; i < app->interfaces_size; i++) 
-            printf("\napp->interfaces[%d] = %d\n", i, app->interfaces[i]);
     
 
 	return 0;
@@ -287,7 +281,7 @@ static struct hsr_module *app_create(void)
 	}
 
 	DLOG_INFO("Adding 'hsr_node' cache to cache manager");
-//app->sk
+
 	ret = hnode_alloc_cache(app->sk, &hnode_cache);
 	if (ret < 0) {
 		DLOG_ERR("Failed to allocate 'hsr_node' cache: %s",

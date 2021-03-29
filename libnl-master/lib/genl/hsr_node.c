@@ -208,7 +208,7 @@ static void hnode_dump_stats(struct nl_object *obj, struct nl_dump_params *p)
 	hnode_dump_details(obj, p);
 }
 
-static uint32_t get_hsr_interface_index(char *name) {
+/*static uint32_t get_hsr_interface_index(char *name) {
 	struct nl_cache *link_cache;
 	struct rtnl_link *hsr_link;
 	struct nl_sock *sock;
@@ -234,7 +234,7 @@ static uint32_t get_hsr_interface_index(char *name) {
 	nl_close(sock);
 
 	return hsr_link->l_index;
-}
+}*/
 
 /*static int get_hnode_status(struct nl_sock *sk, struct nl_cache *cache) {
 	struct nl_object *obj;
@@ -379,7 +379,7 @@ int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 				goto _error;
 				
 			printf("\nwaiting for ack\n");
-			int err = nl_cache_pickup(sk, temp_result);
+			nl_cache_pickup(sk, temp_result);
 			printf("\nack is derrived\n");
 
 			if (temp_result == NULL)
@@ -402,8 +402,8 @@ int hnode_alloc_cache(struct nl_sock *sk, struct nl_cache **result)
 	
 	printf("\nno error in hnode_alloc_cache\n");
 _error:
-	
-	//nl_cache_put(link_cache);
+	printf("\n405_hsr_node.c nl_cache_put(link_cache) sigfault?\n");
+	nl_cache_put(link_cache);
 	nl_close(sock);
 	free(added_interfaces);
 	return ret;	

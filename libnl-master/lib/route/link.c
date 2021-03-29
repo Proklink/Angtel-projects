@@ -242,7 +242,7 @@ static void release_link_info(struct rtnl_link *link)
 	struct rtnl_link_info_ops *io = link->l_info_ops;
 
 	if (io != NULL) {
-		if (io->io_free)
+		if (io->io_free) 
 			io->io_free(link);
 		else {
 			/* Catch missing io_free() implementations */

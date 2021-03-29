@@ -373,6 +373,7 @@ void nl_cache_clear(struct nl_cache *cache)
 
 	nl_list_for_each_entry_safe(obj, tmp, &cache->c_items, ce_list)
 		nl_cache_remove(obj);
+	printf("\n376_cache.c nl_cache_remove(obj)\n");
 }
 
 static void __nl_cache_free(struct nl_cache *cache)
@@ -564,10 +565,12 @@ void nl_cache_remove(struct nl_object *obj)
 			       obj, cache, nl_cache_name(cache));
 	}
 
+	
 	nl_list_del(&obj->ce_list);
 	obj->ce_cache = NULL;
 	nl_object_put(obj);
 	cache->c_nitems--;
+	
 
 	NL_DBG(2, "Deleted object %p from cache %p <%s>.\n",
 	       obj, cache, nl_cache_name(cache));

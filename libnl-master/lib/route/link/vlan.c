@@ -69,7 +69,7 @@ static int vlan_alloc(struct rtnl_link *link)
 	} else {
 		if ((vi = calloc(1, sizeof(*vi))) == NULL)
 			return -NLE_NOMEM;
-
+ 
 		link->l_info = vi;
 	}
 

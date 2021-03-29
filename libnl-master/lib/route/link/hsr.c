@@ -21,7 +21,7 @@ struct hsr_info
 	uint32_t		slave1_id;
 	uint32_t		slave2_id;
 	unsigned char 	multicast_spec;
-	const char 		*supervision_addr;
+	unsigned char 	supervision_addr[ETH_ALEN];
 	uint16_t		seq_nr;
 	uint32_t		vi_mask;
 };
@@ -33,16 +33,16 @@ static struct nla_policy hsr_policy[IFLA_HSR_MAX+1] = {
 	[IFLA_HSR_MULTICAST_SPEC]		= { .type = NLA_U8 },
 	[IFLA_HSR_SEQ_NR]				= { .type = NLA_U16 },
 	[IFLA_HSR_VERSION]				= { .type = NLA_U8 },
-	[IFLA_HSR_SUPERVISION_ADDR]		= { .type = NLA_STRING},
+	[IFLA_HSR_SUPERVISION_ADDR]		= { .minlen = ETH_ALEN},
 	
 };
 
 static int hsr_alloc(struct rtnl_link *link)
 {
 	struct hsr_info *vi;
+	
 
 	if (link->l_info) {
-		vi = link->l_info;
 		memset(link->l_info, 0, sizeof(*vi));
 	} else {
 		if ((vi = calloc(1, sizeof(*vi))) == NULL)
@@ -92,7 +92,8 @@ static int hsr_parse(struct rtnl_link *link, struct nlattr *data,
 	}
 
 	if (tb[IFLA_HSR_SUPERVISION_ADDR]) {
-		vi->supervision_addr = nla_get_string(tb[IFLA_HSR_SUPERVISION_ADDR]);
+		nla_memcpy(vi->supervision_addr, tb[IFLA_HSR_SUPERVISION_ADDR], ETH_ALEN);
+		//vi->supervision_addr = nla_get_u8(tb[IFLA_HSR_SUPERVISION_ADDR]);
 		vi->vi_mask |= HSR_HAS_SUPERVISION_ADDR;
 	}
 	
@@ -103,15 +104,14 @@ errout:
 
 static void hsr_free(struct rtnl_link *link)
 {
+	
 	struct hsr_info *vi = link->l_info;
-
-	if (vi) {
-		free((void *)vi->supervision_addr);
-		vi->supervision_addr = NULL;
+	if (link->l_info) {
+		free(vi);
+		link->l_info = NULL;
 	}
+	
 
-	free((void *)vi);
-	link->l_info = NULL;
 }
 
 static void hsr_dump_line(struct rtnl_link *link, struct nl_dump_params *p)
@@ -161,35 +161,6 @@ static void hsr_dump_details(struct rtnl_link *link, struct nl_dump_params *p)
 	
 	}
 
-/*static int vlan_clone(struct rtnl_link *dst, struct rtnl_link *src)
-{
-	struct vlan_info *vdst, *vsrc = src->l_info;
-	int err;
-	struct vlan_map *p = NULL;
-
-	dst->l_info = NULL;
-	if ((err = rtnl_link_set_type(dst, "vlan")) < 0)
-		return err;
-	vdst = dst->l_info;
-
-	if (vsrc->vi_negress) {
-		p = calloc(vsrc->vi_negress,
-		           sizeof(struct vlan_map));
-		if (!p)
-			return -NLE_NOMEM;
-	}
-
-	*vdst = *vsrc;
-
-	if (vsrc->vi_negress) {
-		vdst->vi_egress_size = vsrc->vi_negress;
-		vdst->vi_egress_qos = p;
-		memcpy(vdst->vi_egress_qos, vsrc->vi_egress_qos,
-		       vsrc->vi_negress * sizeof(struct vlan_map));
-	}
-
-	return 0;
-}*/
 
 static int hsr_put_attrs(struct nl_msg *msg, struct rtnl_link *link)
 {
@@ -215,7 +186,7 @@ static int hsr_put_attrs(struct nl_msg *msg, struct rtnl_link *link)
 		NLA_PUT_U16(msg, IFLA_HSR_SEQ_NR, vi->seq_nr);	
 
 	if (vi->vi_mask & HSR_HAS_SUPERVISION_ADDR)
-		NLA_PUT_STRING(msg, IFLA_HSR_SUPERVISION_ADDR, vi->supervision_addr);
+		NLA_PUT(msg, IFLA_HSR_SUPERVISION_ADDR, ETH_ALEN, vi->supervision_addr);
 
 	nla_nest_end(msg, data);
 
@@ -232,7 +203,7 @@ static struct rtnl_link_info_ops hsr_info_ops = {
 	    [NL_DUMP_LINE]	= hsr_dump_line,
 	    [NL_DUMP_DETAILS]	= hsr_dump_details,
 	},
-	//.io_clone		= vlan_clone,
+	
 	.io_put_attrs		= hsr_put_attrs,
 	.io_free		= hsr_free,
 };

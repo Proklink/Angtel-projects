@@ -2,20 +2,21 @@
 #include <unistd.h>
 
 
-int create_hsr_interface(const char *if_name, const uint32_t slave_1, 
+int create_hsr_interface(struct nl_sock *sk, const char *if_name, const uint32_t slave_1, 
                             const uint32_t slave_2, const int version) {
 
     struct rtnl_link *link;
-
-	struct nl_sock *sk;
 	int ret;
 
-	sk = nl_socket_alloc();
-	if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
-		nl_perror(ret, "Unable to connect socket");
-		goto _error;
-	}
-	
+	// struct nl_sock *sk;
+	// sk = nl_socket_alloc();
+	// if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
+	// 	nl_perror(ret, "Unable to connect socket");
+	// 	goto _error;
+	// }
+
+	if (sk == NULL) 
+		return -1;
 
 	link = rtnl_link_hsr_alloc();
 
@@ -29,19 +30,15 @@ int create_hsr_interface(const char *if_name, const uint32_t slave_1,
 
 	rtnl_link_set_operstate(link, IF_OPER_UP);
 
-	printf("\n46_rtnl_link_add\n");
 	if ((ret = rtnl_link_add(sk, link, NLM_F_CREATE)) < 0) {
-		//fprintf(stderr, "err = %d\n", err);
 		nl_perror(ret, "Unable to add link");
 		goto _error;
 	}
-	printf("\n52_rtnl_link_add\n");
-
 
 	ret = 0;
 _error:
 	rtnl_link_put(link);
-	nl_close(sk);
+	//nl_close(sk);
 
 	return ret;
 }
@@ -49,103 +46,55 @@ _error:
 
 int delete_hsr_interface(const char *if_name) {
 
-	struct rtnl_link *hsr_link;
-	struct nl_sock *sk;
-	struct nl_cache *link_cache;
-	int err;
+	struct rtnl_link *hsr_link = NULL;
+	struct nl_sock *sk = NULL;
+	struct nl_cache *link_cache = NULL;
+	int ret;
 
 	sk = nl_socket_alloc();
-	if ((err = nl_connect(sk, NETLINK_ROUTE)) < 0) {
-		nl_perror(err, "Unable to connect socket");
-		return err;
+	if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
+		nl_perror(ret, "Unable to connect socket");
+		goto _error;
 	}
 
-	if ((err = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
-		nl_perror(err, "Unable to allocate cache");
-		return err;
+	if ((ret = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
+		nl_perror(ret, "Unable to allocate cache");
+		goto _error;
 	}	
 
+	// ret = get_link_cache(sk, link_cache);
+	// if (ret == -1) {
+	// 	DLOG_ERR("error in socket allocation");
+	// 	goto _error;
+	// } else if (ret == -2) {
+	// 	DLOG_ERR(" error in cache allocation");
+	// 	goto _error;
+	// }
+
 	hsr_link = rtnl_link_get_by_name(link_cache, if_name);
+	if (!hsr_link) {
+		ret = -1;
+		goto _error;
+	}
 			
-	err = rtnl_link_delete(sk, hsr_link);
+	ret = rtnl_link_delete(sk, hsr_link);
+	if (ret < 0)
+		goto _error;
 
-	rtnl_link_put(hsr_link);
+
+	ret = 0;
+_error:
+	if (hsr_link)
+		rtnl_link_put(hsr_link);
+	//printf("\n79_delete_hsr_interface  nl_cache_put sigfault?\n");
+	nl_cache_put(link_cache);
 	nl_close(sk);
-
-	return 0;
+	return ret;
 }
-
-
-/*int change_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link, 
-								struct rtnl_link *slave_1_link, struct rtnl_link *slave_2_link) {
-		
-		bool isChanges = false;
-		int ret;
-		
-		struct rtnl_link *new_hsr_link = rtnl_link_hsr_alloc();
-			
-		rtnl_link_set_name(new_hsr_link, rtnl_link_get_name(hsr_link));
-		
-		rtnl_link_hsr_set_version(new_hsr_link, 1);
-
-		int slave_1_id = rtnl_link_get_ifindex(slave_1_link);
-		int slave_2_id = rtnl_link_get_ifindex(slave_2_link);
-	
-		int link_slave_1_id = rtnl_link_hsr_get_slave1(hsr_link);
-		int link_slave_2_id = rtnl_link_hsr_get_slave2(hsr_link);
-
-
-		printf("\ninput_slave1 = %d, input_slave2 = %d\nlink_slave1 = %d, link_slave2 = %d\n", 
-			slave_1_id, slave_2_id, link_slave_1_id, link_slave_2_id);
-
-		
-		if ((slave_1_id == slave_2_id) || 
-							((link_slave_1_id == slave_1_id) && (link_slave_2_id == slave_2_id))) {
-
-			//изменения не требуются
-			return 0;
-		
-		} else {
-			
-			printf("\n0\n");
-		
-			rtnl_link_hsr_set_slave2(new_hsr_link, slave_2_id);
-			rtnl_link_hsr_set_slave1(new_hsr_link, slave_1_id);
-
-			isChanges = true;
-
-		}
-
-		
-		
-		if (isChanges) {
-			printf("\napply changes1\n");
-			
-			//ret = rtnl_link_change(sk, hsr_link, new_hsr_link, 0);
-			ret = delete_hsr_interface(rtnl_link_get_name(hsr_link));
-
-			ret = create_hsr_interface(rtnl_link_get_name(new_hsr_link), 
-								rtnl_link_get_name(slave_1_link), rtnl_link_get_name(slave_2_link), 1);
-
-			if (ret < 0) {
-				fprintf(stderr, "\nerr = %d\n", ret);
-				nl_perror(ret, "Unable to change link");
-				
-				return ret;
-			
-			} else {
-				printf("\nret = %d\n", ret);
-			}
-		}
-	
-		rtnl_link_put(new_hsr_link);
-		return 0;
-		
-}*/
 
 int change_analysis(struct hsr_module *app, const char *if_name, 
 								const char *slave_1_name, const char *slave_2_name) {
-	printf("\n148_change_analysis\n");
+	printf("\n87_change_analysis\n");
 	struct rtnl_link *hsr_link;
 	struct nl_cache *link_cache;
 	struct nl_sock *sk;
@@ -174,18 +123,18 @@ int change_analysis(struct hsr_module *app, const char *if_name,
 	hsr_link = rtnl_link_get_by_name(link_cache, if_name);
 	
 	if (hsr_link == NULL) {
-		ret = create_hsr_interface(if_name, rtnl_link_get_ifindex(slave_1_link), 
+		ret = create_hsr_interface(sk, if_name, rtnl_link_get_ifindex(slave_1_link), 
 												rtnl_link_get_ifindex(slave_2_link), 1);
 		if (ret < 0) {
 			goto _error;
 
 		}
 
-		printf("\n180_create_hsr_interface created\n");
+		//printf("\n123_create_hsr_interface created\n");
 		sleep(5);
 	}
 
-	ret = add_interface_nodes_to_cache(app, if_name);
+	ret = add_interface_nodes_to_cache(sk, app, if_name);
 	if (ret < 0) {
 		goto _error;
 	}
@@ -193,9 +142,8 @@ int change_analysis(struct hsr_module *app, const char *if_name,
 
 	ret = 0;
 _error:
-	//printf("\n197_change_analysis  nl_cache_put\n");
-	//nl_cache_put(link_cache);
-	//printf("\n199_change_analysis  nl_cache_put\n");
+	//printf("\n135_change_analysis  nl_cache_put sigfault?\n");
+	nl_cache_put(link_cache);
 	nl_close(sk);
 	return ret;
 

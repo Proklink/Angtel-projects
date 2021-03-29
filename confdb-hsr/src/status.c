@@ -2,7 +2,7 @@
 
 
 
-int fill_all(struct hsr_module *app) {
+/*int fill_all(struct hsr_module *app) {
 	printf("\nfill_all\n");
 	
 	struct nl_sock *sk;
@@ -67,6 +67,7 @@ int fill_all(struct hsr_module *app) {
 	nl_close(sk);
 	return 0;
 }
+*/
 
 int add_node_to_list(struct hsr_module *app, struct nl_object *n_obj) {
 	struct hsr_node *node = nl_object_priv(n_obj);
@@ -114,12 +115,10 @@ int add_node_to_list(struct hsr_module *app, struct nl_object *n_obj) {
 	}
 
 	ret = 0;
-_error://printf("\n117_add_node_to_list  link_cache\n");
-	//nl_cache_put(link_cache);
-	//printf("\n119_add_node_to_list  link_cache\n");
-
+_error:
+printf("\n119_add_node_to_list  link_cache sigfault?\n");
+	nl_cache_put(link_cache);
 	nl_close(sk);
-	//printf("\n122_add_node_to_list  nl_close\n");
 
 	return ret;
 	
@@ -132,53 +131,61 @@ int delete_node_from_list(struct hsr_module *app, struct nl_object *n_obj) {
 	struct nl_cache *link_cache;
 	struct nl_sock *sk;
 	json_t *jv = NULL;
-	int err;
+	int ret;
 	char link_name[128];
 
     sk = nl_socket_alloc();
-	if ((err = nl_connect(sk, NETLINK_ROUTE)) < 0) {
-		nl_perror(err, "Unable to connect socket");
-		return err;
+	if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
+		nl_perror(ret, "Unable to connect socket");
+		goto _error;
 	}
 		
-	if ((err = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
-		nl_perror(err, "Unable to allocate cache");
-		return err;
+	if ((ret = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
+		nl_perror(ret, "Unable to allocate cache");
+		goto _error;
 	}
 
     int ifindex = hnode_get_ifindex(node);
 
 	if (!rtnl_link_i2name(link_cache, ifindex, link_name, sizeof(link_name))) {
         DLOG_ERR("No match was found");
-		return -1;
+		ret = -1;
+		goto _error;
     }
 
-    err = cdb_edit_status(app->cdb, CDB_OP_REMOVE, jv,
+    ret = cdb_edit_status(app->cdb, CDB_OP_REMOVE, jv,
 		      XPATH_ITF "[name='%s']/angtel-hsr:hsr/node_list[mac-address='%s']", 
 			  link_name, hnode_get_mac_address_A(node));
-	if (err < 0) {
+	if (ret < 0) {
 		DLOG_ERR("Failed to cdb_edit_status");
-		return -1;
+		goto _error;
 	}
 
-    return 0;
+	ret = 0;
+_error:
+printf("\n166_delete_node_from_list  link_cache sigfault?\n");
+	nl_cache_put(link_cache);
+	nl_close(sk);
+
+
+    return ret;
 }
 
-int add_interface_nodes_to_cache(struct hsr_module *app, const char *if_name) {
+int add_interface_nodes_to_cache(struct nl_sock *sk, struct hsr_module *app, const char *if_name) {
 
 	printf("\n161_add_interface_to_cache\n");
 
-	struct nl_sock *sk, *gen_sk;
+	struct nl_sock /**sk,*/ *gen_sk;
 	struct nl_object *hn_obj;
 	struct rtnl_link *hsr_link;
 	int ret;
 	struct nl_cache *link_cache, *hnode_cache_fi;
 
-	sk = nl_socket_alloc();
-	if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
-		nl_perror(ret, "Unable to connect socket");
-		goto _error;
-	}
+	// sk = nl_socket_alloc();
+	// if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
+	// 	nl_perror(ret, "Unable to connect socket");
+	// 	goto _error;
+	// }
 
 	gen_sk = nl_socket_alloc();
 	if ((ret = nl_connect(gen_sk, NETLINK_GENERIC)) < 0) {
@@ -197,7 +204,7 @@ int add_interface_nodes_to_cache(struct hsr_module *app, const char *if_name) {
 	if (ret < 0)
 		goto _error;
 
-	printf("\ncache for interrface %d:\n", rtnl_link_get_ifindex(hsr_link));
+	/*printf("\ncache for interrface %d:\n", rtnl_link_get_ifindex(hsr_link));
 
 	struct nl_dump_params dp = {
 		.dp_type = NL_DUMP_DETAILS,
@@ -208,9 +215,9 @@ int add_interface_nodes_to_cache(struct hsr_module *app, const char *if_name) {
 
 	printf("\ngeneral nodes cache: \n");
 
-	struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
+	nl_cache_dump(mngr_hnode_cache, &dp);*/
 
-	nl_cache_dump(mngr_hnode_cache, &dp);
+	struct nl_cache *mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
 
 	for (NL_CACHE_ELEMENTS(hnode_cache_fi, hn_obj)) {
 		struct hsr_node *node = nl_object_priv(hn_obj);
@@ -228,20 +235,20 @@ int add_interface_nodes_to_cache(struct hsr_module *app, const char *if_name) {
 
 	}
 
-	printf("\ngeneral nodes cache: \n");
+	/*printf("\ngeneral nodes cache: \n");
 
 	mngr_hnode_cache = __nl_cache_mngt_require("hsr_node");
 
-	nl_cache_dump(mngr_hnode_cache, &dp);
+	nl_cache_dump(mngr_hnode_cache, &dp);*/
 
 	
 	ret = 0;
 _error:
-	//nl_cache_put(link_cache);
-	//printf("\n208_link_cache\n");
+	nl_cache_put(link_cache);
+	printf("\n241_status.c link_cache sigfault?\n");
 	nl_cache_put(hnode_cache_fi);
-	//printf("\n210_hnode_cache\n");
+	printf("\n243_status.c link_cache sigfault?\n");
 	nl_close(gen_sk);
-	nl_close(sk);
+//	nl_close(sk);
 	return ret;
 }

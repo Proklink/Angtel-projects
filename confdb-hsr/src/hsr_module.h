@@ -22,6 +22,8 @@ struct hsr_module {
 	
 };
 
+int get_link_cache(struct nl_sock *sk,  struct nl_cache *link_cache);
+
 void add_interface(struct hsr_module *app, uint32_t if_id);
 
 void delete_interface(struct hsr_module *app, uint32_t if_id);

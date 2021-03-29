@@ -66,3 +66,24 @@ int find_interface(struct hsr_module *app,  uint32_t if_id) {
     return 0;
 
 }
+
+
+//-1 - error in socket allocation
+//-2 - error in cache allocation
+int get_link_cache(struct nl_sock *sk,  struct nl_cache *link_cache) {
+    int ret;    
+
+    sk = nl_socket_alloc();
+	if ((ret = nl_connect(sk, NETLINK_ROUTE)) < 0) {
+		nl_perror(ret, "Unable to connect socket");
+		return -1;
+	}
+		
+	if ((ret = rtnl_link_alloc_cache(sk, AF_UNSPEC, &link_cache)) < 0) {
+		nl_perror(ret, "Unable to allocate cache");
+		return -2;
+	}
+
+    return 0;
+
+}
