@@ -7,6 +7,7 @@
 #include <jansson.h>
 #include <netlink/object.h>
 
+
 extern stdlog_channel_t debug_logger;
 extern unsigned int debug_level;
 
@@ -55,4 +56,5 @@ void dlog_cache_change(const char *cache_name, int log_level,
 #define DLOG_INFO_FUNC(...) DLOG_FUNC(STDLOG_INFO, __VA_ARGS__)
 #define DLOG_DEBUG_FUNC(...) DLOG_FUNC(STDLOG_DEBUG, __VA_ARGS__)
 
-#endif
+#endif //_CFD_LOG_H_
+

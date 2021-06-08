@@ -105,7 +105,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_cdbhsr_OBJECTS = cdbhsr-main.$(OBJEXT) cdbhsr-log.$(OBJEXT) \
 	cdbhsr-utils.$(OBJEXT) cdbhsr-apply_conf.$(OBJEXT) \
-	cdbhsr-status.$(OBJEXT) cdbhsr-hsr_module.$(OBJEXT)
+	cdbhsr-status.$(OBJEXT) cdbhsr-hsr_module.$(OBJEXT) \
+	cdbhsr-wait_list.$(OBJEXT)
 cdbhsr_OBJECTS = $(am_cdbhsr_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -137,7 +138,7 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/cdbhsr-apply_conf.Po \
 	./$(DEPDIR)/cdbhsr-hsr_module.Po ./$(DEPDIR)/cdbhsr-log.Po \
 	./$(DEPDIR)/cdbhsr-main.Po ./$(DEPDIR)/cdbhsr-status.Po \
-	./$(DEPDIR)/cdbhsr-utils.Po
+	./$(DEPDIR)/cdbhsr-utils.Po ./$(DEPDIR)/cdbhsr-wait_list.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -348,6 +349,7 @@ cdbhsr_SOURCES = \
 	apply_conf.c \
 	status.c \
 	hsr_module.c \
+	wait_list.c \
 	$(NULL)
 
 cdbhsr_LDADD = \
@@ -471,6 +473,7 @@ include ./$(DEPDIR)/cdbhsr-log.Po # am--include-marker
 include ./$(DEPDIR)/cdbhsr-main.Po # am--include-marker
 include ./$(DEPDIR)/cdbhsr-status.Po # am--include-marker
 include ./$(DEPDIR)/cdbhsr-utils.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-wait_list.Po # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -582,6 +585,20 @@ cdbhsr-hsr_module.obj: hsr_module.c
 #	$(AM_V_CC)source='hsr_module.c' object='cdbhsr-hsr_module.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-hsr_module.obj `if test -f 'hsr_module.c'; then $(CYGPATH_W) 'hsr_module.c'; else $(CYGPATH_W) '$(srcdir)/hsr_module.c'; fi`
+
+cdbhsr-wait_list.o: wait_list.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-wait_list.o -MD -MP -MF $(DEPDIR)/cdbhsr-wait_list.Tpo -c -o cdbhsr-wait_list.o `test -f 'wait_list.c' || echo '$(srcdir)/'`wait_list.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-wait_list.Tpo $(DEPDIR)/cdbhsr-wait_list.Po
+#	$(AM_V_CC)source='wait_list.c' object='cdbhsr-wait_list.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-wait_list.o `test -f 'wait_list.c' || echo '$(srcdir)/'`wait_list.c
+
+cdbhsr-wait_list.obj: wait_list.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-wait_list.obj -MD -MP -MF $(DEPDIR)/cdbhsr-wait_list.Tpo -c -o cdbhsr-wait_list.obj `if test -f 'wait_list.c'; then $(CYGPATH_W) 'wait_list.c'; else $(CYGPATH_W) '$(srcdir)/wait_list.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-wait_list.Tpo $(DEPDIR)/cdbhsr-wait_list.Po
+#	$(AM_V_CC)source='wait_list.c' object='cdbhsr-wait_list.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-wait_list.obj `if test -f 'wait_list.c'; then $(CYGPATH_W) 'wait_list.c'; else $(CYGPATH_W) '$(srcdir)/wait_list.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -722,6 +739,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/cdbhsr-main.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-status.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-utils.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-wait_list.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -773,6 +791,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/cdbhsr-main.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-status.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-utils.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-wait_list.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

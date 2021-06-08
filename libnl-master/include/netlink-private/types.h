@@ -239,15 +239,15 @@ struct hsr_node
 {
 	NLHDR_COMMON
 
-	struct nl_addr *MAC_address_A;//HSR_A_NODE_ADDR
-	struct nl_addr *MAC_address_B;//HSR_A_NODE_ADDR_B
-	uint32_t		hn_ifindex;//HSR_A_IFINDEX
-	uint32_t		hn_slave1_ifindex;//HSR_A_IF1_IFINDEX
-	uint32_t		hn_slave2_ifindex;//HSR_A_IF2_IFINDEX
-	uint32_t		hn_slave1_age;//HSR_A_IF1_AGE
-	uint32_t		hn_slave2_age;//HSR_A_IF2_AGE
-	uint16_t		hn_slave1_seq;//HSR_A_IF1_SEQ
-	uint16_t		hn_slave2_seq;//HSR_A_IF2_SEQ
+	struct nl_addr *MAC_address_A;
+	struct nl_addr *MAC_address_B;
+	uint32_t		hn_ifindex;
+	uint32_t		hn_slave1_ifindex;
+	uint32_t		hn_slave2_ifindex;
+	uint32_t		hn_slave1_age;
+	uint32_t		hn_slave2_age;
+	uint16_t		hn_slave1_seq;
+	uint16_t		hn_slave2_seq;
 	uint32_t		hn_addr_B_ifindex;
 	
 };

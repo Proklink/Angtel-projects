@@ -874,7 +874,7 @@ continue_reading:
 		/* Sequence number checking. The check may be done by
 		 * the user, otherwise a very simple check is applied
 		 * enforcing strict ordering */
-		if (cb->cb_set[NL_CB_SEQ_CHECK]) {printf("nl.c 877\n");
+		if (cb->cb_set[NL_CB_SEQ_CHECK]) {
 			NL_CB_CALL(cb, NL_CB_SEQ_CHECK, msg);
 
 		/* Only do sequence checking if auto-ack mode is enabled */
@@ -892,7 +892,7 @@ continue_reading:
 		if (hdr->nlmsg_type == NLMSG_DONE ||
 		    hdr->nlmsg_type == NLMSG_ERROR ||
 		    hdr->nlmsg_type == NLMSG_NOOP ||
-		    hdr->nlmsg_type == NLMSG_OVERRUN) {printf("\n895_nl.c sk->s_seq_expect++;\n");
+		    hdr->nlmsg_type == NLMSG_OVERRUN) {
 			/* We can't check for !NLM_F_MULTI since some netlink
 			 * users in the kernel are broken. */
 			sk->s_seq_expect++;
@@ -904,10 +904,10 @@ continue_reading:
 		if (hdr->nlmsg_flags & NLM_F_MULTI)
 			multipart = 1;
 
-		if (hdr->nlmsg_flags & NLM_F_DUMP_INTR) {printf("nl.c 907\n");
+		if (hdr->nlmsg_flags & NLM_F_DUMP_INTR) {
 			if (cb->cb_set[NL_CB_DUMP_INTR])
 				NL_CB_CALL(cb, NL_CB_DUMP_INTR, msg);
-			else {printf("nl.c 910\n");
+			else {
 				/*
 				 * We have to continue reading to clear
 				 * all messages until a NLMSG_DONE is
@@ -917,10 +917,10 @@ continue_reading:
 			}
 		}
 		/* Other side wishes to see an ack for this message */
-		if (hdr->nlmsg_flags & NLM_F_ACK) {printf("nl.c 920\n");
+		if (hdr->nlmsg_flags & NLM_F_ACK) {
 			if (cb->cb_set[NL_CB_SEND_ACK])
 				NL_CB_CALL(cb, NL_CB_SEND_ACK, msg);
-			else {printf("nl.c 923\n");
+			else {
 				/* FIXME: implement */
 			}
 		}
@@ -930,7 +930,6 @@ continue_reading:
 		 * out of the loop by default. the user may overrule
 		 * this action by skipping this packet. */
 		if (hdr->nlmsg_type == NLMSG_DONE) {
-		printf("nl.c 933\n");
 			multipart = 0;
 			if (cb->cb_set[NL_CB_FINISH])
 				NL_CB_CALL(cb, NL_CB_FINISH, msg);
@@ -941,7 +940,7 @@ continue_reading:
 		 * user may overrule this action by returning
 		 * NL_PROCEED. */
 		else if (hdr->nlmsg_type == NLMSG_NOOP) {
-			printf("nl.c 944\n");
+			
 			if (cb->cb_set[NL_CB_SKIPPED])
 				NL_CB_CALL(cb, NL_CB_SKIPPED, msg);
 			else
@@ -952,7 +951,6 @@ continue_reading:
 		 * quit parsing. The user may overrule this action by retuning
 		 * NL_SKIP or NL_PROCEED (dangerous) */
 		else if (hdr->nlmsg_type == NLMSG_OVERRUN) {
-			printf("nl.c 955\n");
 		
 			if (cb->cb_set[NL_CB_OVERRUN])
 				NL_CB_CALL(cb, NL_CB_OVERRUN, msg);
@@ -963,10 +961,9 @@ continue_reading:
 		}
 		/* Message carries a nlmsgerr */
 		else if (hdr->nlmsg_type == NLMSG_ERROR) {
-			printf("nl.c 966, NLMSG_ERROR\n");
 			struct nlmsgerr *e = nlmsg_data(hdr);
 
-			if (hdr->nlmsg_len < nlmsg_size(sizeof(*e))) {printf("nl.c 969\n");
+			if (hdr->nlmsg_len < nlmsg_size(sizeof(*e))) {
 				/* Truncated error message, the default action
 				 * is to stop parsing. The user may overrule
 				 * this action by returning NL_SKIP or
@@ -980,7 +977,6 @@ continue_reading:
 			} else if (e->error) {
 				NL_DBG(0, "recvmsgs(%p): RTNETLINK responded with %d (%s)\n",
 					sk, -e->error, nl_strerror_l(-e->error));
-				printf("nl.c 983\n");
 
 				/* Error message reported back from kernel. */
 				if (cb->cb_err) {
@@ -997,15 +993,12 @@ continue_reading:
 					}
 				} else {
 					err = -nl_syserr2nlerr(e->error);
-					printf("nl.c 999 err=%d\n", err);
 					goto out;
 				}
 			} else if (cb->cb_set[NL_CB_ACK]){
-				printf("nl.c 1004\n");
 				NL_CB_CALL(cb, NL_CB_ACK, msg);
 			}
 		} else {
-			printf("nl.c 1005, NL_CB_VALID\n");
 			/* Valid message (not checking for MULTIPART bit to
 			 * get along with broken kernels. NL_SKIP has no
 			 * effect on this.  */

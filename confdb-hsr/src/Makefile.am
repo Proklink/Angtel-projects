@@ -24,6 +24,7 @@ cdbhsr_SOURCES = \
 	apply_conf.c \
 	status.c \
 	hsr_module.c \
+	wait_list.c \
 	$(NULL)
 cdbhsr_LDADD = \
 	$(common_libs) \

@@ -44,11 +44,11 @@ static int include_cb(struct nl_object *obj, struct nl_parser_param *p)
 	struct nl_cache_ops *ops = ca->ca_cache->c_ops;
 
 	NL_DBG(2, "Including object %p into cache %p\n", obj, ca->ca_cache);
-// #ifdef NL_DEBUG
-// 	if (nl_debug >= 4)
-// 		nl_object_dump(obj, &nl_debug_dp);
-// #endif
-nl_object_dump(obj, &nl_debug_dp);
+	#ifdef NL_DEBUG
+		if (nl_debug >= 4)
+			nl_object_dump(obj, &nl_debug_dp);
+	#endif
+
 
 	if (ops->co_event_filter)
 		if (ops->co_event_filter(ca->ca_cache, obj) != NL_OK)
@@ -556,11 +556,10 @@ int nl_cache_mngr_data_ready(struct nl_cache_mngr *mngr)
 	}
 
 	nl_cb_put(cb);
-	if (err < 0 && err != -NLE_AGAIN) {
-		printf("\n559_cache_mngr.c err = %d\n", err);
+	if (err < 0 && err != -NLE_AGAIN) 
 		return err;
-	}
-	printf("\n562_cache_mngr, err = %d\n", err);
+	
+	
 	return nread;
 }
 

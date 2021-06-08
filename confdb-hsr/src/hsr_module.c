@@ -1,10 +1,10 @@
 #include "hsr_module.h"
-
+#include "log.h" 
 
 void add_interface(struct hsr_module *app, uint32_t if_id) {
-
-    app->interfaces = (uint32_t *)realloc(app->interfaces, (app->interfaces_size++) * sizeof(uint32_t));
-    app->interfaces [app->interfaces_size - 1] = if_id;
+    app->interfaces_size++;
+    app->interfaces = (uint32_t *)realloc(app->interfaces, (app->interfaces_size) * sizeof(uint32_t));
+    app->interfaces[app->interfaces_size - 1] = if_id;
 
 }
 
@@ -86,4 +86,41 @@ int get_link_cache(struct nl_sock *sk,  struct nl_cache *link_cache) {
 
     return 0;
 
+}
+
+int hm_cache_manager_alloc(struct hsr_module *app,
+                            struct hm_cache_manager **_hmcm,
+                            int protocol) {
+    struct hm_cache_manager *hmcm = (struct hm_cache_manager *)calloc(1, sizeof(struct hm_cache_manager));
+    int ret = 0;
+
+    hmcm->sk = nl_socket_alloc();
+	if (!hmcm->sk) {
+		DLOG_ERR("Failed to alloc nl socket");
+		goto on_error;
+	}
+
+	ret = nl_cache_mngr_alloc(hmcm->sk, protocol, NL_AUTO_PROVIDE, &hmcm->nl_mngr);
+	if (ret < 0) {
+		DLOG_ERR("Failed allocate cache manager: %s", nl_geterror(ret));
+		goto on_error;
+	}
+
+	hmcm->cache_mngr_fd = nl_cache_mngr_get_fd(hmcm->nl_mngr);
+
+    ret = nl_socket_set_buffer_size(hmcm->sk, 32*32768, 32*32768);
+	if (ret < 0) {
+		DLOG_ERR("Failed to set socket buffer size: %s",
+			 nl_geterror(ret));
+		goto on_error;
+	}
+
+    if (protocol == NETLINK_GENERIC) {
+        nl_cache_mngr_refill_cache_on_adding(hmcm->nl_mngr, false);
+    }
+    
+    *_hmcm = hmcm;
+
+on_error:
+    return ret;
 }

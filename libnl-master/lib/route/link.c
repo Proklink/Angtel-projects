@@ -833,6 +833,7 @@ static void link_dump_line(struct nl_object *obj, struct nl_dump_params *p)
 	nl_dump_line(p, "%s %s ", link->l_name,
 		     nl_llproto2str(link->l_arptype, buf, sizeof(buf)));
 
+
 	if (link->l_addr && !nl_addr_iszero(link->l_addr))
 		nl_dump(p, "%s ", nl_addr2str(link->l_addr, buf, sizeof(buf)));
 
@@ -2155,7 +2156,7 @@ void rtnl_link_set_ifindex(struct rtnl_link *link, int ifindex)
  * @see rtnl_link_set_ifindex()
  * @return Interface index or 0 if not set.
  */
-int rtnl_link_get_ifindex(struct rtnl_link *link)
+int (struct rtnl_link *link)
 {
 	return link->l_index;
 }
