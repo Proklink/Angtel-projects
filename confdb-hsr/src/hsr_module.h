@@ -4,7 +4,8 @@
 #include <netlink/netlink.h>
 #include <netlink/cache.h>
 #include <netlink/route/link.h>
-
+#include <netlink/route/link/hsr.h>
+#include <netlink/genl/hsr_node.h>
 #include <libubox/list.h>
 
 #include <confdb/confdb.h>
@@ -37,6 +38,8 @@ struct hsr_module {
 	struct list_head wait_list_head;
 };
 
+
+
 int hm_cache_manager_alloc(struct hsr_module *app, 
 							struct hm_cache_manager **_hmcm,
                             int protocol);
@@ -50,5 +53,9 @@ void delete_interface(struct hsr_module *app, uint32_t if_id);
 int find_interface(struct hsr_module *app,  uint32_t if_id);
 
 int change_interface_list(struct hsr_module *app, const char *interface_name, int is_add);
+
+struct hsr_module *app_create(void);
+
+void app_destroy(struct hsr_module *app);
 
 #endif //HSR_MODULE_H

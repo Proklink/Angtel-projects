@@ -92,7 +92,7 @@ _error:
 }
 
 
-int delete_hsr_interface(struct rtnl_link *hsr_link, struct nl_sock *sk) {
+int delete_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link) {
 	int ret;
 			
 	ret = rtnl_link_delete(sk, hsr_link);
@@ -160,7 +160,7 @@ int recreate_hsr_interface(struct nl_sock *sk,
 							int version) {
     int ret;
 
-	ret = delete_hsr_interface(old_hsr_link, sk);
+	ret = delete_hsr_interface(sk, old_hsr_link);
 	if (ret < 0) {
 		goto _error;
 	}
@@ -175,26 +175,7 @@ _error:
 
 	return ret;
 }
-
-int hsr_recreation(struct hsr_module *app, 
-					struct nl_sock *sk, 
-					struct rtnl_link *old_hsr_link, 
-					struct rtnl_link *slave_1, 
-					struct rtnl_link *slave_2, 
-					const int version) {
-	int ret;
-
-	set_unset_hsr_recreation(app, slave_1, slave_2);
-
-	ret = recreate_hsr_interface(sk, old_hsr_link, slave_1, slave_2, version);
-	if (ret < 0)
-		return ret;
-
-	set_unset_hsr_recreation(app, slave_1, slave_2);
-
-	return 0;
-}
-
+ 
 int get_master(struct nl_sock *sk, int slave, struct rtnl_link **master) {
 	struct nl_cache *link_cache;
 	struct nl_object *hsr_obj;
@@ -281,57 +262,70 @@ static int main_check(struct nl_sock *sk,
 			if ( ((slave1_ifindex == hlink_sl1) && (slave2_ifindex == hlink_sl2)) || 
 				 ((slave2_ifindex == hlink_sl1) && (slave1_ifindex == hlink_sl2)) ) {
 
-				ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+				//ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+				ret = delete_hsr_interface(sk, hsr_link);
 				if (ret < 0)
 					goto _error;
 				DLOG_ERR("Hsr link exists, slave1 and slave2 matches");
-				free_wait_list_node(node);
+				//add_node_to_wait_list(node, app);
+				//free_wait_list_node(node);
 			} else {
 				if ((slave1_ifindex == hlink_sl1) || (slave1_ifindex == hlink_sl2)) {
 					if (slave2_master == NULL) {
-						ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+						//ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+						ret = delete_hsr_interface(sk, hsr_link);
 						if (ret < 0)
 							goto _error;
+
 						DLOG_ERR("Hsr link exists, slave1 matches, slave2 exists");
-						free_wait_list_node(node);
+						//free_wait_list_node(node);
+						//add_node_to_wait_list(node, app);
 					} else {
 						set_status_flags(node, SLAVE2_BUSY);
-						add_node_to_wait_list(node, app);
+						//add_node_to_wait_list(node, app);
 						DLOG_ERR("Hsr link exists, slave1 matches, slave2 exists and busy");
 					}	
 				} else if ((slave2_ifindex == hlink_sl1) || (slave2_ifindex == hlink_sl2)) {
 					if (slave1_master == NULL) {
-						ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+						//ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+						ret = delete_hsr_interface(sk, hsr_link);
 						if (ret < 0)
 							goto _error;
 						DLOG_ERR("Hsr link exists, slave2 matches, slave1 exists");
-						free_wait_list_node(node);
+						//free_wait_list_node(node);
+						//add_node_to_wait_list(node, app);
 					} else {
 						set_status_flags(node, SLAVE1_BUSY);
-						add_node_to_wait_list(node, app);
+						//add_node_to_wait_list(node, app);
 						DLOG_ERR("Hsr link exists, slave2 matches, slave1 exists and busy");
 					}	
 				} else {
 					if ((slave1_master == NULL) && (slave2_master == NULL)) {
-						ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+						//ret = hsr_recreation(app, sk, hsr_link, slave_1_link, slave_2_link, 1);
+						ret = delete_hsr_interface(sk, hsr_link);
 						if (ret < 0)
 							goto _error;
 						DLOG_ERR("Hsr link exists, slave1 and slave2 exists");
-						free_wait_list_node(node);
+						//free_wait_list_node(node);
+						//add_node_to_wait_list(node, app);
 					} else if ((slave1_master != NULL) && (slave2_master != NULL)){
 						set_status_flags(node, SLAVE1_BUSY | SLAVE2_BUSY);
-						add_node_to_wait_list(node, app);
+						//add_node_to_wait_list(node, app);
 						DLOG_ERR("Hsr link exists, slave1 and slave2 exists and busy");
 					}
 				}
 			}
-			
+			add_node_to_wait_list(node, app);
 		} else {
 			if ((slave1_master == NULL) && (slave2_master == NULL)) {
-				ret = create_hsr_interface(sk, (char *)if_name, slave_1_link, slave_2_link, 1);
-				if (ret < 0)
-					goto _error;
-				free_wait_list_node(node);
+				if (list_empty(&app->wait_list_head)) {
+					ret = create_hsr_interface(sk, (char *)if_name, slave_1_link, slave_2_link, 1);
+					if (ret < 0)
+						goto _error;
+					free_wait_list_node(node);
+				} else {
+					add_node_to_wait_list(node, app);
+				}
 				DLOG_ERR("Hsr link not exists, slave1 and slave2 exists and free\n");
 			} else if ((slave1_master != NULL) && (slave2_master != NULL)) {
 				set_status_flags(node, SLAVE1_BUSY | SLAVE2_BUSY);
@@ -347,7 +341,6 @@ static int main_check(struct nl_sock *sk,
 				add_node_to_wait_list(node, app);
 				DLOG_ERR("Hsr link not exists, slave2 busy, slave1 exists and free\n");
 			}
-			
 		}
 	}
 

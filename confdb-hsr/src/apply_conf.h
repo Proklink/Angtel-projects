@@ -17,7 +17,7 @@ int get_master(struct nl_sock *sk, int slave, struct rtnl_link **master);
 int create_hsr_interface(struct nl_sock *sk, char *if_name, struct rtnl_link *slave_1, 
                         struct rtnl_link *slave_2, const int version);
 
-int delete_hsr_interface(struct rtnl_link *hsr_link, struct nl_sock *sk);
+int delete_hsr_interface(struct nl_sock *sk, struct rtnl_link *hsr_link);
 
 int delete_hsr_interface_by_name(const char *if_name);
 

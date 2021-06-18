@@ -3,12 +3,11 @@
 
 #include "hsr_module.h"
 
-#define SLAVE1_BUSY 		(1 << 0)
+#define SLAVE1_BUSY 		(1 << 0) 
 #define SLAVE2_BUSY 		(1 << 1)
 #define SLAVE1_NOT_EXISTS 	(1 << 2)
 #define SLAVE2_NOT_EXISTS 	(1 << 3)
-#define HSR_STILL_EXISTS 	(1 << 4)
-#define HSR_RECREATION 		(1 << 5)
+#define HSR_STILL_EXISTS 	(1 << 4) //для ограничения создания hsr интерфейса при существующем старом
 
 struct wait_list_node {
 	char *hsr_name;
@@ -51,9 +50,5 @@ void link_released_hsr_not(struct hsr_module *app,
 							struct rtnl_link *link_master);
 
 void hsr_link_deleted(struct hsr_module *app, struct rtnl_link *hsr_link);
-
-void hsr_created(struct hsr_module *app, struct rtnl_link *slave1, struct rtnl_link *slave2);
-
-void set_unset_hsr_recreation(struct hsr_module *app, struct rtnl_link *slave1, struct rtnl_link *slave2);
 
 #endif //WAIT_LIST_H
