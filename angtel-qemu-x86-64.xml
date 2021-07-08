@@ -37,6 +37,10 @@ or other application using the libvirt API.
       <target dir='projects'/>
     </filesystem>
     <interface type='bridge'>
+      <source bridge='br0'/>
+      <model type='virtio'/>
+    </interface>
+    <interface type='bridge'>
       <source bridge='br1'/>
       <model type='virtio'/>
     </interface>
@@ -47,11 +51,7 @@ or other application using the libvirt API.
     <interface type='bridge'>
       <source bridge='br3'/>
       <model type='virtio'/>
-    </interface>
-    <interface type='bridge'>
-      <source bridge='br4'/>
-      <model type='virtio'/>
-    </interface>
+    </interface>    
     <serial type='pty'>
         <target port='0'/>
     </serial>

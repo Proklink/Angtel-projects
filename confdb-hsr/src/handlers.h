@@ -7,8 +7,6 @@
 
 int hsr_handler(json_t *cdb_data, json_t *key, json_t *error, void *data);
 
-
-
 void hnode_cache_change_cb(struct nl_cache *cache,
 				       struct nl_object *o_obj,
 				       struct nl_object *n_obj,

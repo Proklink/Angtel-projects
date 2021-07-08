@@ -15,13 +15,13 @@
 stdlog_channel_t debug_logger;
 unsigned int debug_level = 6;
 
-static int dvlog_channel(stdlog_channel_t channel, const int severity, const char *fmt, va_list ap)
+static int dvlog_channel(stdlog_channel_t channel, const int severity,
+			 const char *fmt, va_list ap)
 {
 	int ret = 0;
 
-	if (severity < debug_level) {
+	if (severity < debug_level)
 		ret = stdlog_vlog(channel, severity, fmt, ap);
-	}
 	return ret;
 }
 
@@ -45,8 +45,8 @@ int dlog_jerr(const json_error_t *err, const int severity, const char *fmt, ...)
 {
 	char *str;
 	int ret;
-
 	va_list ap;
+
 	va_start(ap, fmt);
 	ret = vasprintf(&str, fmt, ap);
 	va_end(ap);
@@ -63,6 +63,7 @@ int dlog_jerr(const json_error_t *err, const int severity, const char *fmt, ...)
 void dlog_json_dump(int sev, json_t *jv, const char *ttl)
 {
 	char *dump = json_dumps(jv, JSON_INDENT(2) | JSON_ENCODE_ANY);
+
 	if (!dump) {
 		DLOG_ERR("Dump '%s' failed", ttl);
 		return;
@@ -79,7 +80,7 @@ static int dump_nl_obj(struct nl_object *obj, enum nl_dump_type type,
 	char *buf = NULL;
 	size_t size;
 	FILE *f;
-	struct nl_dump_params params = {0};
+	struct nl_dump_params params = { 0 };
 
 	f = open_memstream(&buf, &size);
 	if (!f) {
@@ -87,8 +88,7 @@ static int dump_nl_obj(struct nl_object *obj, enum nl_dump_type type,
 		return -1;
 	}
 
-	params.dp_type = type,
-	params.dp_fd = f;
+	params.dp_type = type, params.dp_fd = f;
 
 	nl_object_dump(obj, &params);
 
@@ -108,25 +108,21 @@ static int dump_nl_obj(struct nl_object *obj, enum nl_dump_type type,
 
 	assert(*num > 0);
 
-	if (*num > 1 && strlen((*lines)[*num-1]) == 0) {
+	if (*num > 1 && strlen((*lines)[*num - 1]) == 0) {
 		/* nl_object_dump adds '\n' at the end of output. */
-		free((*lines)[*num-1]);
+		free((*lines)[*num - 1]);
 		(*num)--;
 	}
 
 	return 0;
 }
 
-
 static const char *act2str(int val)
 {
 	const char *tbl[] = {
-		[NL_ACT_UNSPEC] = "unspec",
-		[NL_ACT_NEW] = "new",
-		[NL_ACT_DEL] = "del",
-		[NL_ACT_GET] = "get",
-		[NL_ACT_SET] = "set",
-		[NL_ACT_CHANGE] = "change",
+		[NL_ACT_UNSPEC] = "unspec", [NL_ACT_NEW] = "new",
+		[NL_ACT_DEL] = "del",	    [NL_ACT_GET] = "get",
+		[NL_ACT_SET] = "set",	    [NL_ACT_CHANGE] = "change",
 	};
 
 	return tbl[val];

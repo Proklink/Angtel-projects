@@ -6,12 +6,8 @@
 #include <signal.h>
 #include <stdatomic.h>
 #include <stdbool.h>
-
 #include <jansson.h>
-
-
 #include <linux/if.h>
-
 #include <netlink/route/link.h>
 
 #include "log.h"
@@ -20,16 +16,7 @@
 #include "status.h"
 #include "wait_list.h"
 
-
 static volatile atomic_int keep_running;
-
-
-// struct nl_dump_params details_dp = {
-// 	.dp_type = NL_DUMP_DETAILS,
-// 	.dp_fd = stdout,
-// };
-
-
 
 static bool cdb_log_enable;
 static int cdb_logger(const int severity, const char *fmt, va_list ap)
@@ -40,14 +27,30 @@ static int cdb_logger(const int severity, const char *fmt, va_list ap)
 		return 0;
 
 	switch (severity) {
-	case CDBLOG_EMERG: s = STDLOG_EMERG; break;
-	case CDBLOG_ALERT: s = STDLOG_ALERT; break;
-	case CDBLOG_CRIT: s = STDLOG_CRIT; break;
-	case CDBLOG_ERR: s = STDLOG_ERR; break;
-	case CDBLOG_WARNING: s = STDLOG_WARNING; break;
-	case CDBLOG_NOTICE: s = STDLOG_NOTICE; break;
-	case CDBLOG_INFO: s = STDLOG_INFO; break;
-	default: s = STDLOG_DEBUG; break;
+	case CDBLOG_EMERG:
+		s = STDLOG_EMERG;
+		break;
+	case CDBLOG_ALERT:
+		s = STDLOG_ALERT;
+		break;
+	case CDBLOG_CRIT:
+		s = STDLOG_CRIT;
+		break;
+	case CDBLOG_ERR:
+		s = STDLOG_ERR;
+		break;
+	case CDBLOG_WARNING:
+		s = STDLOG_WARNING;
+		break;
+	case CDBLOG_NOTICE:
+		s = STDLOG_NOTICE;
+		break;
+	case CDBLOG_INFO:
+		s = STDLOG_INFO;
+		break;
+	default:
+		s = STDLOG_DEBUG;
+		break;
 	}
 	dvlog(s, fmt, ap);
 	return 0;
@@ -62,8 +65,10 @@ static void opt_ini_or_die(int argc, char *argv[])
 		switch (opt) {
 		case 'L':
 			log_spec = optarg;
-			if (strcmp(log_spec, "stdout:") != 0 &&	strncmp(log_spec, "file:", 5) != 0 &&
-			    strncmp(log_spec, "uxsock:", 7) != 0 && strncmp(log_spec, "syslog:", 7) != 0) {
+			if (strcmp(log_spec, "stdout:") != 0 &&
+			    strncmp(log_spec, "file:", 5) != 0 &&
+			    strncmp(log_spec, "uxsock:", 7) != 0 &&
+			    strncmp(log_spec, "syslog:", 7) != 0) {
 				fprintf(stderr, "Invalid log spec\n");
 				exit(EXIT_FAILURE);
 			}
@@ -84,7 +89,7 @@ static void opt_ini_or_die(int argc, char *argv[])
 	}
 
 	debug_logger = stdlog_open("hsr-app", 0, STDLOG_USER, log_spec);
-	if (debug_logger == NULL) {
+	if (!debug_logger) {
 		fprintf(stderr, "Failed to open debug logger\n");
 		exit(EXIT_FAILURE);
 	}

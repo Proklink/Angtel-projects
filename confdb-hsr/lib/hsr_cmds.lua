@@ -1,4 +1,3 @@
-
 local c = require('cdb_cli')
 local pretty = require("pl.pretty")
 local mod = {}

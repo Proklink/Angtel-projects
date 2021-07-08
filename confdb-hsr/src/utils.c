@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 int str_split(const char *string, const char *delimiter, char ***result,
 	      int *argc)
 {
@@ -22,7 +21,8 @@ int str_split(const char *string, const char *delimiter, char ***result,
 	if (!lines)
 		goto on_error;
 
-	copystart = copy = strdup(string);
+	copystart = strdup(string);
+	copy = strdup(string);
 	if (!copy)
 		goto on_error;
 
