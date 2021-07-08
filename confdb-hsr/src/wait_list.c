@@ -260,48 +260,40 @@ void link_released_hsr_not(struct hsr_module *app, struct rtnl_link *link, struc
 }
 
 void hsr_link_deleted(struct hsr_module *app, struct rtnl_link *hsr_link) {
-    printf("\nhsr_link_deleted\n");
+    //printf("\nhsr_link_deleted\n");
     struct wait_list_node *node, *next_node;
     char *link_name = rtnl_link_get_name(hsr_link);
     bool met = false;
-    //char *slave1_name = NULL;
-    //char *slave2_name = NULL;
 
     list_for_each_entry_safe(node, next_node, &app->wait_list_head, list_node) {
-        if (!strcmp(node->hsr_name, link_name))
+        if (!strcmp(node->hsr_name, link_name)) {
             reset_status_flags(node, HSR_STILL_EXISTS);
-        if (((node->status & SLAVE1_BUSY) == 0) && 
-                ((node->status & SLAVE2_BUSY) == 0) && 
-                ((node->status & SLAVE2_NOT_EXISTS) == 0) && 
-                ((node->status & SLAVE1_NOT_EXISTS) == 0)) {
-            if ((met == false) && ((node->status & HSR_STILL_EXISTS) == 0)) {
+            if (((node->status & SLAVE1_BUSY) == 0) && 
+                    ((node->status & SLAVE2_BUSY) == 0) && 
+                    ((node->status & SLAVE2_NOT_EXISTS) == 0) && 
+                    ((node->status & SLAVE1_NOT_EXISTS) == 0)) {
                 met = true;
-                //slave1_name = strdup(node->slave1_name);
-                //slave2_name = strdup(node->slave2_name);
                 create_hif(node);
                 break;
-            } 
+                
+            }
         }
     }
 
-    // list_for_each_entry(node, &app->wait_list_head, list_node) {
-    //     if (!strcmp(node->slave1_name, slave1_name)) {
-    //         if (met) 
-    //             set_status_flags(node, SLAVE1_BUSY);
-    //         reset_status_flags(node, SLAVE1_NOT_EXISTS);
-
-    //     } else if (!strcmp(node->slave2_name, slave2_name)) {
-    //         if (met) 
-    //             set_status_flags(node, SLAVE2_BUSY);
-    //         reset_status_flags(node, SLAVE2_NOT_EXISTS);
-    //     }
-    // }
-
-    // printf("\n306_wait_list.c\n");
-    // free(slave1_name);
-    // free(slave2_name);
-    // printf("\n309_wait_list.c\n");
+    if (!met)
+        list_for_each_entry_safe(node, next_node, &app->wait_list_head, list_node) {
+            if (((node->status & SLAVE1_BUSY) == 0) && 
+                    ((node->status & SLAVE2_BUSY) == 0) && 
+                    ((node->status & SLAVE2_NOT_EXISTS) == 0) && 
+                    ((node->status & SLAVE1_NOT_EXISTS) == 0)) {
+                met = true;
+                create_hif(node);
+                break;
+                
+            }
+        }
     
-    print_wait_list(app);
+    
+    //print_wait_list(app);
 }
 

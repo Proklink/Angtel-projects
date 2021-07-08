@@ -106,7 +106,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_cdbhsr_OBJECTS = cdbhsr-main.$(OBJEXT) cdbhsr-log.$(OBJEXT) \
 	cdbhsr-utils.$(OBJEXT) cdbhsr-apply_conf.$(OBJEXT) \
 	cdbhsr-status.$(OBJEXT) cdbhsr-hsr_module.$(OBJEXT) \
-	cdbhsr-wait_list.$(OBJEXT)
+	cdbhsr-wait_list.$(OBJEXT) cdbhsr-handlers.$(OBJEXT)
 cdbhsr_OBJECTS = $(am_cdbhsr_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -136,6 +136,7 @@ DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/cdbhsr-apply_conf.Po \
+	./$(DEPDIR)/cdbhsr-handlers.Po \
 	./$(DEPDIR)/cdbhsr-hsr_module.Po ./$(DEPDIR)/cdbhsr-log.Po \
 	./$(DEPDIR)/cdbhsr-main.Po ./$(DEPDIR)/cdbhsr-status.Po \
 	./$(DEPDIR)/cdbhsr-utils.Po ./$(DEPDIR)/cdbhsr-wait_list.Po
@@ -350,6 +351,7 @@ cdbhsr_SOURCES = \
 	status.c \
 	hsr_module.c \
 	wait_list.c \
+	handlers.c \
 	$(NULL)
 
 cdbhsr_LDADD = \
@@ -468,6 +470,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/cdbhsr-apply_conf.Po # am--include-marker
+include ./$(DEPDIR)/cdbhsr-handlers.Po # am--include-marker
 include ./$(DEPDIR)/cdbhsr-hsr_module.Po # am--include-marker
 include ./$(DEPDIR)/cdbhsr-log.Po # am--include-marker
 include ./$(DEPDIR)/cdbhsr-main.Po # am--include-marker
@@ -599,6 +602,20 @@ cdbhsr-wait_list.obj: wait_list.c
 #	$(AM_V_CC)source='wait_list.c' object='cdbhsr-wait_list.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-wait_list.obj `if test -f 'wait_list.c'; then $(CYGPATH_W) 'wait_list.c'; else $(CYGPATH_W) '$(srcdir)/wait_list.c'; fi`
+
+cdbhsr-handlers.o: handlers.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-handlers.o -MD -MP -MF $(DEPDIR)/cdbhsr-handlers.Tpo -c -o cdbhsr-handlers.o `test -f 'handlers.c' || echo '$(srcdir)/'`handlers.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-handlers.Tpo $(DEPDIR)/cdbhsr-handlers.Po
+#	$(AM_V_CC)source='handlers.c' object='cdbhsr-handlers.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-handlers.o `test -f 'handlers.c' || echo '$(srcdir)/'`handlers.c
+
+cdbhsr-handlers.obj: handlers.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -MT cdbhsr-handlers.obj -MD -MP -MF $(DEPDIR)/cdbhsr-handlers.Tpo -c -o cdbhsr-handlers.obj `if test -f 'handlers.c'; then $(CYGPATH_W) 'handlers.c'; else $(CYGPATH_W) '$(srcdir)/handlers.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cdbhsr-handlers.Tpo $(DEPDIR)/cdbhsr-handlers.Po
+#	$(AM_V_CC)source='handlers.c' object='cdbhsr-handlers.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(cdbhsr_CFLAGS) $(CFLAGS) -c -o cdbhsr-handlers.obj `if test -f 'handlers.c'; then $(CYGPATH_W) 'handlers.c'; else $(CYGPATH_W) '$(srcdir)/handlers.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -734,6 +751,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/cdbhsr-apply_conf.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-handlers.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-hsr_module.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-log.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-main.Po
@@ -786,6 +804,7 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/cdbhsr-apply_conf.Po
+	-rm -f ./$(DEPDIR)/cdbhsr-handlers.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-hsr_module.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-log.Po
 	-rm -f ./$(DEPDIR)/cdbhsr-main.Po
